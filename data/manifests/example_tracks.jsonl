@@ -1,0 +1,2 @@
+{"frame_index":0,"timestamp_sec":0.0,"detections":[{"track_id":"car-1","class_name":"car","confidence":0.95,"bbox_xyxy":[20.0,30.0,80.0,90.0]}]}
+{"frame_index":1,"timestamp_sec":0.083,"detections":[{"track_id":"car-1","class_name":"car","confidence":0.93,"bbox_xyxy":[25.0,30.0,85.0,90.0]}]}

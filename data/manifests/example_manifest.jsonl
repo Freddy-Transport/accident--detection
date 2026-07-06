@@ -1,0 +1,1 @@
+{"video_id":"smoke-001","video_path":"data/samples/smoke_accident_like.mp4","label":"accident","accident_start_sec":2.0,"accident_end_sec":4.0,"split":"smoke","source_dataset":"synthetic_smoke","camera_type":"fixed_traffic_surveillance","fps":12.0,"duration_sec":6.0,"sha256":null,"track_path":"data/manifests/example_tracks.jsonl"}
