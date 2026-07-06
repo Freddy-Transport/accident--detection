@@ -1,0 +1,8 @@
+architecture: r3d_18
+num_classes: 2
+clip_num_frames: 16
+clip_size: 112
+batch_size: 1
+learning_rate: 0.0001
+pretrained_weights: null
+checkpoint_path: /root/autodl-tmp/traffic_accident_rnd/models/checkpoints/baseline_r3d18.pt

@@ -1,0 +1,10 @@
+project_root: /root/autodl-tmp/traffic_accident_rnd
+data_dir: /root/autodl-tmp/traffic_accident_rnd/data
+raw_video_dir: /root/autodl-tmp/traffic_accident_rnd/data/raw
+manifest_dir: /root/autodl-tmp/traffic_accident_rnd/data/manifests
+sample_dir: /root/autodl-tmp/traffic_accident_rnd/data/samples
+model_dir: /root/autodl-tmp/traffic_accident_rnd/models
+pretrained_dir: /root/autodl-tmp/traffic_accident_rnd/models/pretrained
+checkpoint_dir: /root/autodl-tmp/traffic_accident_rnd/models/checkpoints
+log_dir: /root/autodl-tmp/traffic_accident_rnd/logs
+output_dir: /root/autodl-tmp/traffic_accident_rnd/outputs

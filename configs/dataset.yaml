@@ -1,0 +1,4 @@
+default_source: ACCIDENT/Kaggle
+max_single_download_gb: 5
+kaggle_credentials_path: /root/.kaggle/kaggle.json
+camera_type: fixed_traffic_surveillance

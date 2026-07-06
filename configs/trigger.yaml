@@ -1,0 +1,8 @@
+sample_fps: 4.0
+resize_width: 160
+resize_height: 90
+threshold_z: 2.5
+pre_window_sec: 2.0
+post_window_sec: 4.0
+min_gap_sec: 1.0
+max_segments: 5

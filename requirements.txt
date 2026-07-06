@@ -1,0 +1,11 @@
+opencv-python-headless
+fastapi
+uvicorn
+pydantic
+pyyaml
+pytest
+httpx
+python-multipart
+kaggle
+torch
+torchvision
