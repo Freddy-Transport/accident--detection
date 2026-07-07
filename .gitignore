@@ -48,3 +48,6 @@ experiments/accident_mmaction2_baseline/reports/*.log
 # Isolated MMAction2 environment
 .venv_mmaction/
 third_party/mmaction2.partial_*/
+
+# Exported deployment model artifacts
+models/exported/
