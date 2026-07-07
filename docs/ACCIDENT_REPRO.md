@@ -23,21 +23,23 @@ scripts/accident_run_demo.sh
 Kaggle token 使用 `/root/.kaggle/access_token`，权限必须为 `600`。脚本不打印 token 内容。
 
 
-## ONNX bbox demo fallback
+## bbox demo model
 
-`yolo11x.pt` 从 GitHub release 下载速度极慢时，可以使用已上传到远程数据盘的 `cardet.onnx`：
+`yolo11x.pt` 从 GitHub release 下载速度极慢时，默认使用已上传到远程数据盘的 `车辆检测_v8l.pt`：
 
-- 模型路径：`/root/autodl-tmp/traffic_accident_rnd/models/pretrained/cardet.onnx`
-- SHA256：`9aa4b06f41c0de22c344ac00fb1a6e08f089097e63eb3c9cb88323f49984d97f`
-- 运行依赖：heuristic `.venv` 额外安装 `lap`、`onnx`、`onnxruntime`
-- ONNX 固定 batch=1，demo 默认 `ACCIDENT_BBOX_BATCH_SIZE=1`
+- 模型路径：`/root/autodl-tmp/traffic_accident_rnd/models/pretrained/车辆检测_v8l.pt`
+- SHA256：`40312460cc09ca58b419ea724c5fe55de1627692203daf3672d694a8d6fee197`
+- 运行依赖：heuristic `.venv` 额外安装 `lap`；保留 `onnx`、`onnxruntime` 以兼容导出模型
+- `.pt` 默认 `ACCIDENT_BBOX_BATCH_SIZE=2`，可按显存调整
 
 ```bash
 cd /root/autodl-tmp/traffic_accident_rnd
-ACCIDENT_BBOX_MODEL_PATH=/root/autodl-tmp/traffic_accident_rnd/models/pretrained/cardet.onnx ACCIDENT_BBOX_BATCH_SIZE=1 scripts/accident_run_demo.sh
+ACCIDENT_BBOX_MODEL_PATH=/root/autodl-tmp/traffic_accident_rnd/models/pretrained/车辆检测_v8l.pt \
+ACCIDENT_BBOX_BATCH_SIZE=2 \
+scripts/accident_run_demo.sh
 ```
 
-说明：官方 `bbox_dynamics.py` 对 PyTorch `.pt` 权重调用 `YOLO.to()` 和 `track()`；导出的 ONNX 模型不支持该路径。本项目提供 `scripts/accident_bbox_dynamics_export_model.py`，只替换官方 `Tracker`，保留官方 temporal/spatial 评估流程。ONNX 路径使用 `predict()` 获取每帧 bbox，并过滤非法框。
+说明：默认 `.pt` 权重走官方 `YOLO.to()` 和 `track()` 路径。本项目保留 `scripts/accident_bbox_dynamics_export_model.py`，用于兼容 ONNX 等导出模型；导出模型路径使用 `predict()` 获取每帧 bbox，并过滤非法框。
 
 ## 验收点
 

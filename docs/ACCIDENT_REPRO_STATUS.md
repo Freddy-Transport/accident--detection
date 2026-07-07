@@ -41,10 +41,11 @@ third_party/ACCIDENT/baselines/heuristic/.venv/bin/python bbox_dynamics.py --hel
 ## 官方 demo 复现 - 2026-07-07
 
 - 运行脚本：`scripts/accident_run_demo.sh`
-- 运行日志：`logs/accident_official/accident_run_demo_wrapper.log`
-- bbox 模型：`/root/autodl-tmp/traffic_accident_rnd/models/pretrained/cardet.onnx`
+- 运行日志：`logs/accident_official/accident_run_demo_vehicle_v8l.log`
+- bbox 模型：`/root/autodl-tmp/traffic_accident_rnd/models/pretrained/车辆检测_v8l.pt`
+- bbox 模型 SHA256：`40312460cc09ca58b419ea724c5fe55de1627692203daf3672d694a8d6fee197`
 - bbox 适配器：`scripts/accident_bbox_dynamics_export_model.py`
-- bbox batch size：`1`
+- bbox batch size：`2`
 - 输出目录：`outputs/accident_official_demo/`
 - 输出文件：`output_naive.csv`、`output_optical_flow.csv`、`output_bbox_dynamics.csv`、`GDadq8Vznvc_00.json`、`demo_summary.json`
 
@@ -52,5 +53,6 @@ third_party/ACCIDENT/baselines/heuristic/.venv/bin/python bbox_dynamics.py --hel
 
 - naive 全量 2027 条：Temporal accuracy Sigma 0.50/1.00/2.00 = `0.107/0.190/0.295`；Spatial accuracy = `0.076/0.250/0.588`；Classification = `0.33547113961519487`。
 - optical_flow `--take 1`：预测视频 `GDadq8Vznvc_00.mp4`，真实事故时间 `6.792s`，预测 `6.317673469387755s`，绝对误差 `0.4743265306122444s`。
-- bbox/cardet ONNX `--take 1`：预测视频 `GDadq8Vznvc_00.mp4`，真实事故时间 `6.792s`，预测 `15.012965986394558s`，绝对误差 `8.220965986394559s`；输出 detection JSON 生成成功，但该模型在该视频上没有非空 bbox，空间中心退化为 `(0.5, 0.5)`。
-- `yolo11x.pt` 未完成下载；原因是 GitHub release asset 下载速度过低。当前阶段以用户上传的 `cardet.onnx` 完成可复现 demo 流程，不把 ONNX/pt 权重提交到 git。
+- bbox/车辆检测_v8l `--take 1`：预测视频 `GDadq8Vznvc_00.mp4`，真实事故时间 `6.792s`，预测 `6.55543537414966s`，绝对误差 `0.23656462585034s`；检测 JSON 覆盖 `442` 帧，非空检测帧 `442` 帧，总检测框 `3759` 个。
+- bbox temporal accuracy Sigma 0.50/1.00/2.00 = `0.894/0.972/0.993`；spatial accuracy = `0.000/0.010/0.314`；optical_flow + bbox ensemble temporal accuracy = `0.777/0.939/0.984`。
+- `cardet.onnx` 在该 demo 视频上未产生有效 bbox，已不再作为默认 bbox demo 模型；`yolo11x.pt` 仍未完成下载，原因是 GitHub release asset 下载速度过低。
