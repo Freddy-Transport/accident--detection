@@ -9,6 +9,7 @@ ACCIDENT_OUTPUT_DIR="${ACCIDENT_OUTPUT_DIR:-${PROJECT_ROOT}/outputs/accident_off
 PROJECT_PYTHON="${PROJECT_PYTHON:-${PROJECT_ROOT}/.venv/bin/python}"
 PROJECT_PIP="${PROJECT_PIP:-${PROJECT_ROOT}/.venv/bin/pip}"
 KAGGLE_TOKEN_FILE="${KAGGLE_TOKEN_FILE:-/root/.kaggle/access_token}"
+export PATH="${PROJECT_ROOT}/.venv/bin:${PATH}"
 
 preflight() {
   echo "=== required preflight: hostname ==="
