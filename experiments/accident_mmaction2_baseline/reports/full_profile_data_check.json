@@ -1,0 +1,66 @@
+{
+  "annotation_summary": {
+    "profile": "full",
+    "annotation_dir": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full",
+    "clip_root": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/full",
+    "materialize": true,
+    "max_side": 640,
+    "splits": {
+      "train": {
+        "available": 625,
+        "selected": 625,
+        "written": 625,
+        "failed": [],
+        "labels": {
+          "non_accident": 219,
+          "accident": 406
+        },
+        "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/train.txt",
+        "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/train_clips.csv"
+      },
+      "val": {
+        "available": 153,
+        "selected": 153,
+        "written": 153,
+        "failed": [],
+        "labels": {
+          "accident": 101,
+          "non_accident": 52
+        },
+        "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/val.txt",
+        "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/val_clips.csv"
+      },
+      "test": {
+        "available": 2468,
+        "selected": 2468,
+        "written": 2468,
+        "failed": [],
+        "labels": {
+          "non_accident": 948,
+          "accident": 1520
+        },
+        "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/test.txt",
+        "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/test_clips.csv"
+      }
+    },
+    "group_leakage_count": 0,
+    "group_leakage_examples": []
+  },
+  "decode_check": {
+    "train": {
+      "rows": 625,
+      "checked": 30,
+      "failed": []
+    },
+    "val": {
+      "rows": 153,
+      "checked": 30,
+      "failed": []
+    },
+    "test": {
+      "rows": 2468,
+      "checked": 30,
+      "failed": []
+    }
+  }
+}

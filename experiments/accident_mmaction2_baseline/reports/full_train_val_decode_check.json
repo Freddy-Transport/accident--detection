@@ -1,0 +1,12 @@
+{
+  "train": {
+    "rows": 625,
+    "checked": 20,
+    "failed": []
+  },
+  "val": {
+    "rows": 153,
+    "checked": 20,
+    "failed": []
+  }
+}
