@@ -388,3 +388,37 @@ def build_legacy_candidate_segments(
     selected = merged[:max_segments]
     selected.sort(key=lambda item: float(item["segment_start_sec"]))
     return selected
+
+
+def build_final_accident_events(
+    predictions: list[dict[str, Any]],
+    *,
+    video_id: str,
+    video_path: str,
+    threshold: float,
+    checkpoint: str,
+) -> list[dict[str, Any]]:
+    events: list[dict[str, Any]] = []
+    for idx, pred in enumerate(predictions):
+        score = float(pred.get("accident_score", 0.0))
+        if score < threshold:
+            continue
+        events.append({
+            "event_id": f"{video_id}_accident_{idx:03d}",
+            "event_type": "traffic_accident",
+            "video_id": video_id,
+            "video_path": video_path,
+            "segment_start_sec": float(pred.get("segment_start_sec", 0.0)),
+            "segment_end_sec": float(pred.get("segment_end_sec", 0.0)),
+            "accident_score": score,
+            "threshold": float(threshold),
+            "decision": "accident",
+            "video_model": "VideoMAE",
+            "video_model_checkpoint": checkpoint,
+            "trigger_reasons": list(pred.get("trigger_reasons", [])),
+            "evidence_track_ids": [int(tid) for tid in pred.get("evidence_track_ids", [])],
+            "candidate_id": int(pred.get("candidate_id", idx)),
+            "clip_path": pred.get("clip_path"),
+            "notes": "YOLO/Track evidence supports candidate selection and visualization only; VideoMAE score gates the final accident decision.",
+        })
+    return events
