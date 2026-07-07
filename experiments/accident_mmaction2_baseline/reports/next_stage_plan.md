@@ -1,7 +1,14 @@
 # Next Stage Plan
 
-1. Add real CCTV hard negative data: congestion, temporary stops, bus stops, queue growth, night/rain glare, occlusion, construction, breakdowns.
-2. Replace IoU fallback with StrongSORT/BoxMOT or the user's production tracker while preserving Track JSONL.
-3. Train a three-class model only after hard negatives are labeled: normal / hard_negative / accident.
-4. Calibrate thresholds by camera and alarm budget; current high-recall threshold 0.56 still has high false positive rate on weak negatives.
-5. Add ROI filtering and track-level vehicle evidence selection so rendered boxes focus on likely conflict vehicles rather than all dense traffic boxes.
+## Recommended Next Steps
+
+1. Add real CCTV hard negative data: congestion, bus stop, temporary parking, construction, night glare, rain/fog, occlusion, and camera shake.
+2. Re-train/evaluate VideoMAE with `accident / normal / hard_negative` once labels are available; keep current binary model as baseline.
+3. Run longer RTSP-style validation on fixed-camera streams and measure false alarms per camera-hour.
+4. Calibrate candidate trigger thresholds separately per camera ROI and lane geometry; keep YOLO/Track as evidence, not accident truth.
+5. Package the exported TorchScript or ONNX model behind the pipeline preprocessing wrapper before considering FastAPI/gRPC deployment.
+6. Consider TensorRT only after ONNX preprocessing and numerical parity are stable on a representative validation set.
+
+## Current Deployment Candidate
+
+Use the full pipeline demo with `--tracker auto`, threshold `0.56`, and dry-run push first. Do not enable real alarms until hard negative CCTV false alarm testing is complete.

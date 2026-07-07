@@ -28,7 +28,10 @@ DEFAULT_OUTPUTS = PROJECT_ROOT / 'experiments/accident_mmaction2_baseline/output
 def sanitize_video_id(video: str) -> str:
     stem = Path(video).stem if '://' not in video else video.rsplit('/', 1)[-1]
     stem = stem or 'stream'
-    return re.sub(r'[^A-Za-z0-9_.-]+', '_', stem)[:80]
+    clean = re.sub(r'[^A-Za-z0-9_.-]+', '_', stem).strip('.')[:80]
+    if not clean or clean.startswith('-'):
+        clean = 'v_' + clean.lstrip('-')
+    return clean
 
 
 def run_step(name: str, cmd: list[str], log_dir: Path) -> None:
