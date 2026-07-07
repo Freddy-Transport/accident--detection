@@ -8,10 +8,14 @@ import os
 import time
 from pathlib import Path
 
-import cv2
-import torch
-from mmaction.apis import inference_recognizer, init_recognizer
+import sys
 
+PROJECT_ROOT = Path('/root/autodl-tmp/traffic_accident_rnd')
+SRC_ROOT = PROJECT_ROOT / 'src'
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
+
+import cv2
 from traffic_accident_rnd.cascade import read_jsonl
 
 
@@ -59,6 +63,13 @@ def main() -> int:
     args = parser.parse_args()
 
     os.environ.setdefault('TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD', '1')
+    try:
+        import torch
+        from mmaction.apis import inference_recognizer, init_recognizer
+    except Exception as exc:
+        print(json.dumps({'status': 'blocked', 'reason': f'MMAction2 import failed: {exc}'}, ensure_ascii=False, indent=2))
+        return 2
+
     output_dir = Path(args.output_dir)
     clip_dir = output_dir / 'candidate_clips'
     pred_dir = output_dir / 'predictions'
