@@ -29,3 +29,9 @@ logs/accident_official/*.log
 logs/accident_official/*.err
 logs/accident_official/*.csv
 logs/accident_official/*.json
+
+# Uploaded model artifacts in project root
+/*.pt
+/*.onnx
+/*.engine
+/*.safetensors

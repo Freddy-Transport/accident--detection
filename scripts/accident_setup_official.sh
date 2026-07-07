@@ -25,14 +25,18 @@ cd "${ACCIDENT_REPO}/baselines/heuristic"
 
 # Record help output using the heuristic venv created by uv sync.
 UV_PY="${ACCIDENT_REPO}/baselines/heuristic/.venv/bin/python"
+"${PROJECT_ROOT}/.venv/bin/uv" pip install --python "${UV_PY}" lap onnx onnxruntime | tee "${ACCIDENT_LOG_DIR}/uv_install_heuristic_runtime.log"
 "${UV_PY}" naive.py --help > "${ACCIDENT_LOG_DIR}/naive_help.log"
 "${UV_PY}" optical_flow.py --help > "${ACCIDENT_LOG_DIR}/optical_flow_help.log"
 "${UV_PY}" bbox_dynamics.py --help > "${ACCIDENT_LOG_DIR}/bbox_dynamics_help.log"
 "${UV_PY}" - <<'PY' | tee "${ACCIDENT_LOG_DIR}/heuristic_import_check.log"
-import cv2, pandas, ruptures, torch, ultralytics
+import cv2, lap, onnx, onnxruntime, pandas, ruptures, torch, ultralytics
 print("cv2", cv2.__version__)
 print("pandas", pandas.__version__)
 print("ruptures", ruptures.__version__)
 print("torch", torch.__version__, "cuda", torch.cuda.is_available())
 print("ultralytics", ultralytics.__version__)
+print("lap", getattr(lap, "__version__", "installed"))
+print("onnx", onnx.__version__)
+print("onnxruntime", onnxruntime.__version__)
 PY
