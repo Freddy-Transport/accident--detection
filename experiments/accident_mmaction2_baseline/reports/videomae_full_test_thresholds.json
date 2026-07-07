@@ -1,0 +1,141 @@
+{
+  "predictions": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/predictions/predictions.csv",
+  "num_samples": 2468,
+  "step": 0.01,
+  "best_by_macro_f1": {
+    "threshold": 0.61,
+    "accuracy": 0.7431118314424635,
+    "macro_precision": 0.7292029819179101,
+    "macro_recall": 0.71900260937153,
+    "macro_f1": 0.7228047052154195,
+    "accident_precision": 0.7741336633663366,
+    "accident_recall": 0.8230263157894737,
+    "accident_f1": 0.7978316326530612,
+    "false_positive_rate": 0.3850210970464135,
+    "false_negative_rate": 0.1769736842105263,
+    "confusion_matrix": [
+      [
+        583,
+        365
+      ],
+      [
+        269,
+        1251
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.6842723004694836,
+        "recall": 0.6149789029535865,
+        "f1": 0.6477777777777778,
+        "support": 948
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.7741336633663366,
+        "recall": 0.8230263157894737,
+        "f1": 0.7978316326530612,
+        "support": 1520
+      }
+    },
+    "avg_latency_ms": 98.39459354581683,
+    "roc_auc": 0.7953510159893404,
+    "pr_auc": 0.8451863636047917
+  },
+  "high_recall_operating_point": {
+    "threshold": 0.54,
+    "accuracy": 0.7402755267423015,
+    "macro_precision": 0.7442349869405572,
+    "macro_recall": 0.6918901288030201,
+    "macro_f1": 0.6993048796041439,
+    "accident_precision": 0.7364174287251211,
+    "accident_recall": 0.9006578947368421,
+    "accident_f1": 0.8102989050014797,
+    "false_positive_rate": 0.5168776371308017,
+    "false_negative_rate": 0.0993421052631579,
+    "confusion_matrix": [
+      [
+        458,
+        490
+      ],
+      [
+        151,
+        1369
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.7520525451559934,
+        "recall": 0.4831223628691983,
+        "f1": 0.588310854206808,
+        "support": 948
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.7364174287251211,
+        "recall": 0.9006578947368421,
+        "f1": 0.8102989050014797,
+        "support": 1520
+      }
+    },
+    "avg_latency_ms": 98.39459354581683,
+    "roc_auc": 0.7953510159893404,
+    "pr_auc": 0.8451863636047917
+  },
+  "low_false_alarm_operating_point": {
+    "threshold": 0.76,
+    "accuracy": 0.6057536466774717,
+    "macro_precision": 0.6839917143305638,
+    "macro_recall": 0.6618726404619143,
+    "macro_f1": 0.6026246954565921,
+    "accident_precision": 0.8751714677640604,
+    "accident_recall": 0.41973684210526313,
+    "accident_f1": 0.5673632725655847,
+    "false_positive_rate": 0.09599156118143459,
+    "false_negative_rate": 0.5802631578947368,
+    "confusion_matrix": [
+      [
+        857,
+        91
+      ],
+      [
+        882,
+        638
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.4928119608970673,
+        "recall": 0.9040084388185654,
+        "f1": 0.6378861183475996,
+        "support": 948
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.8751714677640604,
+        "recall": 0.41973684210526313,
+        "f1": 0.5673632725655847,
+        "support": 1520
+      }
+    },
+    "avg_latency_ms": 98.39459354581683,
+    "roc_auc": 0.7953510159893404,
+    "pr_auc": 0.8451863636047917
+  },
+  "threshold_sweep_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/metrics_sweep/threshold_sweep.csv"
+}

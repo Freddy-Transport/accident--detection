@@ -1,0 +1,45 @@
+{
+  "threshold": 0.67,
+  "accuracy": 0.7196110210696921,
+  "macro_precision": 0.712708319588309,
+  "macro_recall": 0.723741117033089,
+  "macro_f1": 0.7131641867048788,
+  "accident_precision": 0.8141122913505311,
+  "accident_recall": 0.7059210526315789,
+  "accident_f1": 0.7561663143058492,
+  "false_positive_rate": 0.25843881856540085,
+  "false_negative_rate": 0.29407894736842105,
+  "confusion_matrix": [
+    [
+      703,
+      245
+    ],
+    [
+      447,
+      1073
+    ]
+  ],
+  "labels": [
+    0,
+    1
+  ],
+  "per_class": {
+    "0": {
+      "name": "non_accident",
+      "precision": 0.611304347826087,
+      "recall": 0.7415611814345991,
+      "f1": 0.6701620591039085,
+      "support": 948
+    },
+    "1": {
+      "name": "accident",
+      "precision": 0.8141122913505311,
+      "recall": 0.7059210526315789,
+      "f1": 0.7561663143058492,
+      "support": 1520
+    }
+  },
+  "avg_latency_ms": 98.39459354581683,
+  "roc_auc": 0.7953510159893404,
+  "pr_auc": 0.8451863636047917
+}

@@ -32,3 +32,13 @@ Confusion matrices are stored under each model `metrics/confusion_matrix.png`; r
 - Before longer training, add true normal and hard-negative CCTV clips; current weak negatives are too easy to leak accident-context bias and too weak for false-alarm estimates.
 - Fix SlowFast config/checkpoint alignment before using it for model-quality comparison.
 - Keep YOLO/Track outputs as candidate trigger/evidence only, then use video classification for accident semantics.
+
+## VideoMAE Full Fine-tune 2026-07-07
+
+- Data: full ACCIDENT clip-level profile, train 625 / val 153 / test 2468.
+- Best checkpoint: `experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch/best_acc_top1_epoch_2.pth`.
+- Val-selected high-recall threshold: `0.56`.
+- Test accident recall: `0.8796`; accident precision: `0.7448`; macro F1: `0.7056`; ROC-AUC: `0.7954`; PR-AUC: `0.8452`.
+- Test confusion matrix at threshold 0.56: `[[490, 458], [183, 1337]]`.
+- Average clip latency: `98.395 ms`.
+- Limitation: non_accident is a pre-event weak negative, not real hard negative CCTV.

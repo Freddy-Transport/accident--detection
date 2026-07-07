@@ -1,0 +1,11 @@
+{
+  "run_dir": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch",
+  "best_checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch/best_acc_top1_epoch_2.pth",
+  "val_predictions_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_val_predictions/predictions/predictions.csv",
+  "test_predictions_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/predictions/predictions.csv",
+  "test_predictions_json": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/predictions/predictions.json",
+  "test_confusion_matrix_thr056": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/metrics_thr056/confusion_matrix.png",
+  "test_error_cases_dir": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions/visualizations/error_cases",
+  "cascade_positive_visualization": "experiments/accident_mmaction2_baseline/outputs/20260707_145438_cascade_positive_demo/uC7g8msxRak_00__accident_accident_visualization.mp4",
+  "cascade_positive_predictions": "experiments/accident_mmaction2_baseline/outputs/20260707_145438_cascade_positive_demo/predictions/candidate_predictions.json"
+}

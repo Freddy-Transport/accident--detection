@@ -1,8 +1,7 @@
 # Next Stage Plan
 
-1. Add true normal and hard-negative fixed-camera CCTV clips before increasing training epochs.
-2. Fix SlowFast config/checkpoint alignment or switch to the exact dumped MIM SlowFast config before drawing model-quality conclusions.
-3. Run VideoMAE-B 3-10 epoch fine-tuning with validation-threshold selection and class-balanced sampling after hard negatives are available.
-4. Keep X3D-S as the low-latency deployment candidate and retest after hard negatives are added.
-5. Add YOLO/Track evidence overlays and candidate trigger features for speed drop, abnormal stop, trajectory conflict, bbox overlap and queue growth.
-6. Defer ONNX/TensorRT and service hardening until a threshold with acceptable recall and false alarm rate is validated on real hard negatives.
+1. Add real CCTV hard negative data: congestion, temporary stops, bus stops, queue growth, night/rain glare, occlusion, construction, breakdowns.
+2. Replace IoU fallback with StrongSORT/BoxMOT or the user's production tracker while preserving Track JSONL.
+3. Train a three-class model only after hard negatives are labeled: normal / hard_negative / accident.
+4. Calibrate thresholds by camera and alarm budget; current high-recall threshold 0.56 still has high false positive rate on weak negatives.
+5. Add ROI filtering and track-level vehicle evidence selection so rendered boxes focus on likely conflict vehicles rather than all dense traffic boxes.
