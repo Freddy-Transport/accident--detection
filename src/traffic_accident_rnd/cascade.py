@@ -315,3 +315,76 @@ def select_evidence_detections(
         if detections:
             selected[int(frame.get("frame_index", 0))] = detections
     return selected
+
+
+LEGACY_TRAJECTORY_REASON_MAP = {
+    0: ("abnormal_stop", "weiting_ids"),
+    1: ("trajectory_conflict", "trajectory_anomaly_ids"),
+    3: ("warning_sign_missing", "warning_sign_ids"),
+    4: ("low_speed", "low_speed_ids"),
+    5: ("legacy_accident_suspect", "legacy_accident_ids"),
+    6: ("queue_growth", "congestion_ids"),
+}
+
+
+def merge_candidate_segments(segments: list[dict[str, Any]], max_gap_sec: float = 1.0) -> list[dict[str, Any]]:
+    return _merge_segments(segments, max_gap_sec=max_gap_sec)
+
+
+def track_time_ranges(frames: list[dict[str, Any]]) -> dict[int, dict[str, float]]:
+    ranges: dict[int, dict[str, float]] = {}
+    for frame in frames:
+        ts = float(frame.get("timestamp_sec", 0.0))
+        for det in frame.get("detections", []):
+            if "track_id" not in det:
+                continue
+            tid = int(det["track_id"])
+            item = ranges.setdefault(tid, {"start_sec": ts, "end_sec": ts})
+            item["start_sec"] = min(float(item["start_sec"]), ts)
+            item["end_sec"] = max(float(item["end_sec"]), ts)
+    return ranges
+
+
+def build_legacy_candidate_segments(
+    frames: list[dict[str, Any]],
+    trajectory_events: dict[str, Any],
+    *,
+    video_id: str,
+    pre_window_sec: float = 2.0,
+    post_window_sec: float = 4.0,
+    max_segments: int = 8,
+) -> list[dict[str, Any]]:
+    ranges = track_time_ranges(frames)
+    all_times = [float(frame.get("timestamp_sec", 0.0)) for frame in frames]
+    fallback_start = min(all_times) if all_times else 0.0
+    fallback_end = max(all_times) if all_times else 0.0
+    segments: list[dict[str, Any]] = []
+    for event in trajectory_events.get("events", []):
+        reason = str(event.get("reason", "unknown"))
+        track_ids = {int(tid) for tid in event.get("evidence_track_ids", []) if tid is not None}
+        starts = [ranges[tid]["start_sec"] for tid in track_ids if tid in ranges]
+        ends = [ranges[tid]["end_sec"] for tid in track_ids if tid in ranges]
+        start = min(starts) if starts else fallback_start
+        end = max(ends) if ends else fallback_end
+        score = float(event.get("candidate_score", 1.0))
+        segments.append(_make_segment(
+            video_id=video_id,
+            start=start,
+            end=end,
+            reason=reason,
+            score=score,
+            track_ids=track_ids,
+            evidence={
+                "source": "legacy_trackVehicleInSeqpre",
+                "legacy_flag_index": event.get("legacy_flag_index"),
+                "legacy_event_type": event.get("legacy_event_type"),
+                "legacy_flag_value": event.get("legacy_flag_value"),
+            },
+            pre_window_sec=pre_window_sec,
+            post_window_sec=post_window_sec,
+        ))
+    merged = _merge_segments(segments)
+    merged.sort(key=lambda item: float(item.get("candidate_score", 0.0)), reverse=True)
+    selected = merged[:max_segments]
+    selected.sort(key=lambda item: float(item["segment_start_sec"]))
+    return selected

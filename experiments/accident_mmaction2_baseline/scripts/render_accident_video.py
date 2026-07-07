@@ -18,7 +18,7 @@ from traffic_accident_rnd.cascade import read_jsonl
 
 
 def positive_windows(predictions: list[dict], threshold: float) -> list[dict]:
-    return [p for p in predictions if float(p.get('accident_score', 0.0)) >= threshold or int(p.get('pred_label', 0)) == 1]
+    return [p for p in predictions if float(p.get('accident_score', 0.0)) >= threshold]
 
 
 def main() -> int:
