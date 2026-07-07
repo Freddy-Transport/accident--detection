@@ -1,0 +1,23 @@
+project_root: /root/autodl-tmp/traffic_accident_rnd
+video_model:
+  model_name: videomae_pretrained_full
+  config: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/videomae_pretrained_full_accident.py
+  checkpoint: null
+  threshold: 0.5
+  python: /root/autodl-tmp/traffic_accident_rnd/.venv_mmaction/bin/python
+yolo:
+  python: /root/autodl-tmp/traffic_accident_rnd/third_party/ACCIDENT/baselines/heuristic/.venv/bin/python
+  model: /root/autodl-tmp/traffic_accident_rnd/models/pretrained/车辆检测_v8l.pt
+  frame_stride: 5
+  confidence: 0.25
+  image_size: 640
+tracker:
+  default: iou_fallback
+  iou_threshold: 0.3
+  max_age_frames: 8
+  strongsort_status: optional_not_installed_in_mmaction_env
+candidate_trigger:
+  pre_window_sec: 2.0
+  post_window_sec: 4.0
+  max_segments: 8
+outputs_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs
