@@ -1,164 +1,115 @@
 {
-  "videomae": {
-    "accuracy": 0.5,
-    "macro_precision": 0.25,
-    "macro_recall": 0.5,
-    "macro_f1": 0.3333333333333333,
-    "accident_precision": 0.0,
-    "accident_recall": 0.0,
-    "accident_f1": 0.0,
-    "confusion_matrix": [
-      [
-        20,
-        0
+  "models": [
+    {
+      "key": "videomae_pretrained",
+      "name": "VideoMAE-B",
+      "config": "experiments/accident_mmaction2_baseline/configs/videomae_pretrained_accident.py",
+      "run_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch/best_acc_top1_epoch_1.pth",
+      "inference_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch_inference",
+      "accuracy": 0.5766666666666667,
+      "accident_precision": 0.5672514619883041,
+      "accident_recall": 0.6466666666666666,
+      "macro_f1": 0.5745821190500118,
+      "roc_auc": 0.5869333333333333,
+      "pr_auc": 0.5502933869470865,
+      "fpr": 0.49333333333333335,
+      "fnr": 0.35333333333333333,
+      "avg_latency_ms": 78.441,
+      "fps_clips": 12.749,
+      "gpu_max_memory_mb": 603.514,
+      "confusion_matrix": [
+        [
+          76,
+          74
+        ],
+        [
+          53,
+          97
+        ]
       ],
-      [
-        20,
-        0
-      ]
-    ],
-    "labels": [
-      0,
-      1
-    ],
-    "per_class": {
-      "0": {
-        "name": "non_accident",
-        "precision": 0.5,
-        "recall": 1.0,
-        "f1": 0.6666666666666666,
-        "support": 20
-      },
-      "1": {
-        "name": "accident",
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "support": 20
-      }
+      "best_threshold": 0.5,
+      "best_macro_f1": 0.5745821190500118,
+      "high_recall_threshold": 0.44,
+      "high_recall_accident_recall": 0.96,
+      "high_recall_fpr": 0.8866666666666667,
+      "low_fa_threshold": 0.57,
+      "low_fa_accident_recall": 0.09333333333333334,
+      "low_fa_fpr": 0.08
     },
-    "avg_latency_ms": 232.48840873129666,
-    "roc_auc": 0.545,
-    "pr_auc": 0.564634976134976,
-    "summary": {
-      "model": "videomae",
-      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3/best_acc_top1_epoch_1.pth",
-      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/videomae_accident.py",
-      "split": "test",
-      "num_samples": 40,
-      "elapsed_sec": 10.468,
-      "avg_latency_ms": 232.488,
-      "fps_clips": 4.301,
-      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo/predictions/predictions.csv",
-      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo/predictions/predictions.json"
-    }
-  },
-  "slowfast": {
-    "accuracy": 0.375,
-    "macro_precision": 0.34326018808777425,
-    "macro_recall": 0.375,
-    "macro_f1": 0.34167215273206053,
-    "accident_precision": 0.2727272727272727,
-    "accident_recall": 0.15,
-    "accident_f1": 0.1935483870967742,
-    "confusion_matrix": [
-      [
-        12,
-        8
+    {
+      "key": "slowfast_pretrained",
+      "name": "SlowFast-R50",
+      "config": "experiments/accident_mmaction2_baseline/configs/slowfast_pretrained_accident.py",
+      "run_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch/best_acc_top1_epoch_1.pth",
+      "inference_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch_inference",
+      "accuracy": 0.52,
+      "accident_precision": 0.5131578947368421,
+      "accident_recall": 0.78,
+      "macro_f1": 0.4851994851994852,
+      "roc_auc": 0.5313777777777777,
+      "pr_auc": 0.5313943231929363,
+      "fpr": 0.74,
+      "fnr": 0.22,
+      "avg_latency_ms": 92.519,
+      "fps_clips": 10.809,
+      "gpu_max_memory_mb": 220.278,
+      "confusion_matrix": [
+        [
+          39,
+          111
+        ],
+        [
+          33,
+          117
+        ]
       ],
-      [
-        17,
-        3
-      ]
-    ],
-    "labels": [
-      0,
-      1
-    ],
-    "per_class": {
-      "0": {
-        "name": "non_accident",
-        "precision": 0.41379310344827586,
-        "recall": 0.6,
-        "f1": 0.4897959183673469,
-        "support": 20
-      },
-      "1": {
-        "name": "accident",
-        "precision": 0.2727272727272727,
-        "recall": 0.15,
-        "f1": 0.1935483870967742,
-        "support": 20
-      }
+      "best_threshold": 0.52,
+      "best_macro_f1": 0.5295766189570613,
+      "high_recall_threshold": 0.48,
+      "high_recall_accident_recall": 0.96,
+      "high_recall_fpr": 0.8933333333333333,
+      "low_fa_threshold": 0.56,
+      "low_fa_accident_recall": 0.09333333333333334,
+      "low_fa_fpr": 0.06666666666666667
     },
-    "avg_latency_ms": 383.1823065178469,
-    "roc_auc": 0.2525,
-    "pr_auc": 0.3815266815121691,
-    "summary": {
-      "model": "slowfast",
-      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke/best_acc_top1_epoch_1.pth",
-      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/slowfast_accident.py",
-      "split": "test",
-      "num_samples": 40,
-      "elapsed_sec": 16.28,
-      "avg_latency_ms": 383.182,
-      "fps_clips": 2.61,
-      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo/predictions/predictions.csv",
-      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo/predictions/predictions.json"
-    }
-  },
-  "x3d": {
-    "accuracy": 0.5,
-    "macro_precision": 0.25,
-    "macro_recall": 0.5,
-    "macro_f1": 0.3333333333333333,
-    "accident_precision": 0.5,
-    "accident_recall": 1.0,
-    "accident_f1": 0.6666666666666666,
-    "confusion_matrix": [
-      [
-        0,
-        20
+    {
+      "key": "x3d_pretrained",
+      "name": "X3D-S",
+      "config": "experiments/accident_mmaction2_baseline/configs/x3d_pretrained_accident.py",
+      "run_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch/best_acc_top1_epoch_1.pth",
+      "inference_dir": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch_inference",
+      "accuracy": 0.51,
+      "accident_precision": 0.5051903114186851,
+      "accident_recall": 0.9733333333333334,
+      "macro_f1": 0.3760522927602258,
+      "roc_auc": 0.5825777777777777,
+      "pr_auc": 0.5873192220423142,
+      "fpr": 0.9533333333333334,
+      "fnr": 0.02666666666666667,
+      "avg_latency_ms": 59.421,
+      "fps_clips": 16.829,
+      "gpu_max_memory_mb": 78.884,
+      "confusion_matrix": [
+        [
+          7,
+          143
+        ],
+        [
+          4,
+          146
+        ]
       ],
-      [
-        0,
-        20
-      ]
-    ],
-    "labels": [
-      0,
-      1
-    ],
-    "per_class": {
-      "0": {
-        "name": "non_accident",
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "support": 20
-      },
-      "1": {
-        "name": "accident",
-        "precision": 0.5,
-        "recall": 1.0,
-        "f1": 0.6666666666666666,
-        "support": 20
-      }
-    },
-    "avg_latency_ms": 271.0561580490321,
-    "roc_auc": 0.45000000000000007,
-    "pr_auc": 0.516150340445449,
-    "summary": {
-      "model": "x3d",
-      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke/best_acc_top1_epoch_1.pth",
-      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/x3d_accident.py",
-      "split": "test",
-      "num_samples": 40,
-      "elapsed_sec": 11.301,
-      "avg_latency_ms": 271.056,
-      "fps_clips": 3.689,
-      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo/predictions/predictions.csv",
-      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo/predictions/predictions.json"
+      "best_threshold": 0.52,
+      "best_macro_f1": 0.5346414701253411,
+      "high_recall_threshold": 0.5,
+      "high_recall_accident_recall": 0.9733333333333334,
+      "high_recall_fpr": 0.9533333333333334,
+      "low_fa_threshold": 0.53,
+      "low_fa_accident_recall": 0.12,
+      "low_fa_fpr": 0.05333333333333334
     }
-  }
+  ]
 }

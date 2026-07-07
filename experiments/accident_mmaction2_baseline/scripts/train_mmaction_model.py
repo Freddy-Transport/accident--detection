@@ -38,10 +38,7 @@ def build_cmd(mode: str, config_path: str, work_dir: Path, checkpoint: str | Non
     tool = 'train.py' if mode == 'train' else 'test.py'
     runner = resolve_runner(tool)
     if runner is None:
-        raise FileNotFoundError(
-            f'Missing MMAction2 tool: {MMACTION_ROOT / "tools" / tool}; '
-            f'also missing MIM: {MIM_BIN}'
-        )
+        raise FileNotFoundError(f'Missing MMAction2 tool and MIM binary: {tool}')
     runner_kind, runner_path = runner
     if runner_kind == 'source':
         if mode == 'train':
@@ -58,27 +55,31 @@ def build_cmd(mode: str, config_path: str, work_dir: Path, checkpoint: str | Non
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='videomae', choices=['videomae', 'slowfast', 'x3d'])
+    parser.add_argument('--model', default='videomae_pretrained')
+    parser.add_argument('--config')
     parser.add_argument('--work-dir')
     parser.add_argument('--checkpoint')
     args = parser.parse_args()
 
     cfg = load_experiment_config()
+    if args.model not in cfg['models'] and not args.config:
+        print(json.dumps({'status': 'blocked', 'reason': f"Unknown model `{args.model}`. Available: {sorted(cfg['models'])}"}, ensure_ascii=False, indent=2))
+        return 2
     ok, msg = has_mmaction()
     if not ok:
         print(json.dumps({'status': 'blocked', 'reason': 'MMAction2 import failed: ' + msg}, ensure_ascii=False, indent=2))
         return 2
 
+    config_path = args.config or cfg['models'][args.model]['config']
     work_dir = Path(args.work_dir or Path(cfg['outputs_root']) / f'{timestamp()}_{args.model}')
     ensure_dir(work_dir)
-    mode = 'train'
     try:
-        cmd = build_cmd(mode, cfg['models'][args.model]['config'], work_dir, args.checkpoint)
+        cmd = build_cmd('train', config_path, work_dir, args.checkpoint)
     except Exception as exc:
         print(json.dumps({'status': 'blocked', 'reason': str(exc)}, ensure_ascii=False, indent=2))
         return 2
 
-    print(json.dumps({'status': 'running', 'mode': mode, 'cmd': cmd}, ensure_ascii=False, indent=2))
+    print(json.dumps({'status': 'running', 'mode': 'train', 'model': args.model, 'config': config_path, 'work_dir': str(work_dir), 'cmd': cmd}, ensure_ascii=False, indent=2))
     env = os.environ.copy()
     env.setdefault('TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD', '1')
     return subprocess.run(cmd, env=env).returncode

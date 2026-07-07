@@ -41,6 +41,7 @@ third_party/mmaction2/
 
 # Generated MMAction2 accident baseline artifacts
 experiments/accident_mmaction2_baseline/data/clips/
+experiments/accident_mmaction2_baseline/data/generated_clips
 experiments/accident_mmaction2_baseline/outputs/
 experiments/accident_mmaction2_baseline/reports/*.log
 

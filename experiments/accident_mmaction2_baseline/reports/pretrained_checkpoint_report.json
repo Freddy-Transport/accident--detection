@@ -1,0 +1,58 @@
+{
+  "dest": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2",
+  "raw_dir": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads",
+  "dry_run": false,
+  "models": {
+    "slowfast": {
+      "description": "SlowFast R50 Kinetics-400 pretrained backbone",
+      "config_id": "slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb",
+      "target": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/slowfast_r50_k400_backbone.pth",
+      "download_command": [
+        "/root/autodl-tmp/traffic_accident_rnd/.venv_mmaction/bin/mim",
+        "download",
+        "mmaction2",
+        "--config",
+        "slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb",
+        "--dest",
+        "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads"
+      ],
+      "download_returncode": 0,
+      "download_log_tail": "processing slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb...\ndownloading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.3/132.3 MiB 14.5 MB/s eta 0:00:00\nSuccessfully downloaded slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb_20220818-1cb6dfc8.pth to /root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads\nSuccessfully dumped slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb.py to /root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads\n",
+      "status": "ready",
+      "source_checkpoint": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads/slowfast_r50_8xb8-8x8x1-256e_kinetics400-rgb_20220818-1cb6dfc8.pth",
+      "source_size_mb": 132.315,
+      "target_size_mb": 128.776,
+      "removed_head_keys": [
+        "cls_head.fc_cls.bias",
+        "cls_head.fc_cls.weight"
+      ],
+      "removed_head_key_count": 2
+    },
+    "x3d": {
+      "description": "X3D-S Kinetics-400 pretrained backbone",
+      "config_id": "x3d_s_13x6x1_facebook-kinetics400-rgb",
+      "target": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/x3d_s_k400_backbone.pth",
+      "download_command": [
+        "/root/autodl-tmp/traffic_accident_rnd/.venv_mmaction/bin/mim",
+        "download",
+        "mmaction2",
+        "--config",
+        "x3d_s_13x6x1_facebook-kinetics400-rgb",
+        "--dest",
+        "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads"
+      ],
+      "download_returncode": 0,
+      "download_log_tail": "processing x3d_s_13x6x1_facebook-kinetics400-rgb...\ndownloading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.7/14.7 MiB 28.4 MB/s eta 0:00:00\nSuccessfully downloaded x3d_s_13x6x1_facebook-kinetics400-rgb_20201027-623825a0.pth to /root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads\nSuccessfully dumped x3d_s_13x6x1_facebook-kinetics400-rgb.py to /root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads\n",
+      "status": "ready",
+      "source_checkpoint": "/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/raw_mim_downloads/x3d_s_13x6x1_facebook-kinetics400-rgb_20201027-623825a0.pth",
+      "source_size_mb": 14.683,
+      "target_size_mb": 8.261,
+      "removed_head_keys": [
+        "cls_head.fc1.weight",
+        "cls_head.fc2.bias",
+        "cls_head.fc2.weight"
+      ],
+      "removed_head_key_count": 3
+    }
+  }
+}

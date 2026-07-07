@@ -67,5 +67,30 @@
     "event-level accident_time",
     "bbox-level accident region metadata"
   ],
-  "weak_negative_policy": "pre-event clips before accident_time minus margin"
+  "weak_negative_policy": "pre-event clips before accident_time minus margin",
+  "manifest_fields": [
+    "sample_id",
+    "source_video_id",
+    "video_path",
+    "source_dataset",
+    "original_label",
+    "mapped_label",
+    "label_id",
+    "label_type",
+    "window_type",
+    "duration",
+    "fps",
+    "num_frames",
+    "width",
+    "height",
+    "split",
+    "scene_id",
+    "camera_id",
+    "group_id",
+    "start_frame",
+    "end_frame",
+    "clip_start_sec",
+    "clip_end_sec",
+    "notes"
+  ]
 }

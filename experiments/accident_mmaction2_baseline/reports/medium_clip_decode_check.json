@@ -1,0 +1,98 @@
+{
+  "splits": {
+    "train": {
+      "checked": 20,
+      "ok": 20,
+      "failed": [],
+      "examples": [
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/train/mr_it2B6muI_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 54,
+          "fps": 14.817,
+          "width": 640,
+          "height": 288
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/train/CVSBJThqVgA_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 78,
+          "fps": 14.942,
+          "width": 640,
+          "height": 360
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/train/PAuYsJns-Fc_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 73,
+          "fps": 7.982,
+          "width": 640,
+          "height": 360
+        }
+      ]
+    },
+    "val": {
+      "checked": 20,
+      "ok": 20,
+      "failed": [],
+      "examples": [
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/val/hSt-aJwZqsY_3_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 36,
+          "fps": 30.0,
+          "width": 640,
+          "height": 360
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/val/yab6XEomWGM_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 25,
+          "fps": 7.5,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/val/mOwuW8t6-GQ_2_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 69,
+          "fps": 24.943,
+          "width": 640,
+          "height": 360
+        }
+      ]
+    },
+    "test": {
+      "checked": 20,
+      "ok": 20,
+      "failed": [],
+      "examples": [
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/test/kABWTDKgc9U_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 107,
+          "fps": 29.966,
+          "width": 640,
+          "height": 288
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/test/xsX4nrMR0ds_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 76,
+          "fps": 13.396,
+          "width": 640,
+          "height": 436
+        },
+        {
+          "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium/test/JZcTEwl1Od4_00__pre_event_non_accident.mp4",
+          "label": 0,
+          "frames": 110,
+          "fps": 27.933,
+          "width": 640,
+          "height": 360
+        }
+      ]
+    }
+  },
+  "ok": true
+}

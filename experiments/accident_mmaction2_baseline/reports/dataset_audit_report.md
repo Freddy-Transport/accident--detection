@@ -8,5 +8,6 @@
 - Split counts: `{'test': 1520, 'train': 507}`
 - Explicit non-accident labels: `false`
 - Explicit hard-negative labels: `false`
+- Manifest is clip-level and grouped by `source_video_id` / `group_id`.
 
 ACCIDENT real is accident-centric. Non-accident samples in this baseline are weak pre-event clips, not real normal traffic videos.

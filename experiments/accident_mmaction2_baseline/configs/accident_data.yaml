@@ -5,10 +5,12 @@ metadata_real: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset/metadata-re
 video_root: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset/real_videos
 manifest_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/accident_manifest.csv
 annotation_dir: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations
+annotation_profiles_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations
 clip_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/clips
+generated_clip_root: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips
 label_map_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/label_map.json
 class_names_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/class_names.txt
-split_strategy: in_distribution_train_test_with_train_holdout_val
+split_strategy: in_distribution_train_test_with_train_holdout_val_grouped_by_source_video
 val_fraction_from_train: 0.2
 random_seed: 20260707
 accident_clip:
@@ -19,4 +21,45 @@ non_accident_clip:
   margin_before_accident_sec: 3.0
   min_duration_sec: 1.0
 hard_negative_enabled: false
+clip_materialization:
+  max_side: 640
+  codec: mp4v
+  overwrite: false
+annotation_profiles:
+  smoke:
+    annotation_subdir: .
+    clip_subdir: smoke
+    max_per_label:
+      train: 20
+      val: 20
+      test: 20
+    materialize: true
+    max_side: 640
+  small:
+    annotation_subdir: small
+    clip_subdir: small
+    max_per_label:
+      train: 50
+      val: 25
+      test: 50
+    materialize: true
+    max_side: 640
+  medium:
+    annotation_subdir: medium
+    clip_subdir: medium
+    max_per_label:
+      train: 150
+      val: 60
+      test: 150
+    materialize: true
+    max_side: 640
+  full:
+    annotation_subdir: full
+    clip_subdir: full
+    max_per_label:
+      train: 0
+      val: 0
+      test: 0
+    materialize: true
+    max_side: 640
 yolo_detection_json_dir: /root/autodl-tmp/traffic_accident_rnd/outputs/accident_official_demo
