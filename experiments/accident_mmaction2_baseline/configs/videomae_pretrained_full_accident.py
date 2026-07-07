@@ -1,0 +1,29 @@
+# Full ACCIDENT clip-level VideoMAE fine-tuning config.
+# non_accident clips are derived from pre-event windows; no hard negative class is trained here.
+default_scope='mmaction'
+dataset_type='VideoDataset'
+data_root=''
+ann_file_train='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/train.txt'
+ann_file_val='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/val.txt'
+ann_file_test='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/full/test.txt'
+num_classes=2
+clip_len=16
+frame_interval=4
+input_size=224
+load_from='/root/autodl-tmp/traffic_accident_rnd/models/pretrained/mmaction2/videomae_base_k400_backbone.pth'
+train_pipeline=[dict(type='DecordInit'),dict(type='SampleFrames',clip_len=clip_len,frame_interval=frame_interval,num_clips=1),dict(type='DecordDecode'),dict(type='Resize',scale=(-1,256)),dict(type='RandomResizedCrop'),dict(type='Resize',scale=(input_size,input_size),keep_ratio=False),dict(type='Flip',flip_ratio=0.5),dict(type='FormatShape',input_format='NCTHW'),dict(type='PackActionInputs')]
+val_pipeline=[dict(type='DecordInit'),dict(type='SampleFrames',clip_len=clip_len,frame_interval=frame_interval,num_clips=1,test_mode=True),dict(type='DecordDecode'),dict(type='Resize',scale=(-1,256)),dict(type='CenterCrop',crop_size=input_size),dict(type='FormatShape',input_format='NCTHW'),dict(type='PackActionInputs')]
+train_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=True),dataset=dict(type=dataset_type,ann_file=ann_file_train,data_prefix=dict(video=data_root),pipeline=train_pipeline))
+val_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=False),dataset=dict(type=dataset_type,ann_file=ann_file_val,data_prefix=dict(video=data_root),pipeline=val_pipeline,test_mode=True))
+test_pipeline=val_pipeline
+test_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=False),dataset=dict(type=dataset_type,ann_file=ann_file_test,data_prefix=dict(video=data_root),pipeline=val_pipeline,test_mode=True))
+val_evaluator=dict(type='AccMetric')
+test_evaluator=dict(type='AccMetric')
+train_cfg=dict(type='EpochBasedTrainLoop',max_epochs=3,val_begin=1,val_interval=1)
+val_cfg=dict(type='ValLoop')
+test_cfg=dict(type='TestLoop')
+optim_wrapper=dict(optimizer=dict(type='AdamW',lr=2e-05,weight_decay=0.05),clip_grad=dict(max_norm=40,norm_type=2))
+param_scheduler=[dict(type='LinearLR',start_factor=0.1,by_epoch=True,begin=0,end=1),dict(type='CosineAnnealingLR',T_max=3,by_epoch=True,begin=0,end=3)]
+default_hooks=dict(checkpoint=dict(type='CheckpointHook',interval=1,save_best='auto',max_keep_ckpts=2),logger=dict(type='LoggerHook',interval=20))
+work_dir='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/mmaction_work_dirs/videomae_pretrained_full'
+model=dict(type='Recognizer3D',backbone=dict(type='VisionTransformer',img_size=224,patch_size=16,embed_dims=768,depth=12,num_heads=12,mlp_ratio=4,qkv_bias=True,num_frames=16,norm_cfg=dict(type='LN',eps=1e-6)),cls_head=dict(type='TimeSformerHead',num_classes=num_classes,in_channels=768,average_clips='prob'),data_preprocessor=dict(type='ActionDataPreprocessor',mean=[123.675,116.28,103.53],std=[58.395,57.12,57.375],format_shape='NCTHW'))
