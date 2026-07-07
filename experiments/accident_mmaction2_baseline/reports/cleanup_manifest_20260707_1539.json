@@ -1,0 +1,384 @@
+{
+  "timestamp": "2026-07-07T15:39:34+0800",
+  "project_root": "/root/autodl-tmp/traffic_accident_rnd",
+  "policy": "remove old smoke/medium/sanity generated artifacts; keep full VideoMAE, reports, pretrained weights, full clips, and cascade demos",
+  "keep_paths": [
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch",
+      "exists": true,
+      "size_bytes": 2430151917
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_val_predictions",
+      "exists": true,
+      "size_bytes": 158014
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions",
+      "exists": true,
+      "size_bytes": 4534228
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_145438_cascade_positive_demo",
+      "exists": true,
+      "size_bytes": 1330952
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_145332_cascade_demo",
+      "exists": true,
+      "size_bytes": 3094774
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/reports",
+      "exists": true,
+      "size_bytes": 472257
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/configs",
+      "exists": true,
+      "size_bytes": 55618
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/data/annotations",
+      "exists": true,
+      "size_bytes": 2557264
+    },
+    {
+      "path": "models/pretrained",
+      "exists": true,
+      "size_bytes": 1056158253
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/full",
+      "exists": true,
+      "size_bytes": 1703148655
+    }
+  ],
+  "delete_paths_before": [
+    {
+      "path": "experiments/accident_mmaction2_baseline/data/clips",
+      "exists": true,
+      "size_bytes": 155124425
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/video_checks",
+      "exists": true,
+      "size_bytes": 3884023
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/videomae_sanity",
+      "exists": true,
+      "size_bytes": 702
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/videomae_pretrained_full_sanity",
+      "exists": true,
+      "size_bytes": 3060
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1153_videomae_mmaction_smoke",
+      "exists": true,
+      "size_bytes": 14176
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1154_videomae_mmaction_smoke2",
+      "exists": true,
+      "size_bytes": 14234
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3",
+      "exists": true,
+      "size_bytes": 1389642965
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3_test",
+      "exists": true,
+      "size_bytes": 23094
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3_test2",
+      "exists": true,
+      "size_bytes": 24702
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo",
+      "exists": true,
+      "size_bytes": 858457
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke",
+      "exists": true,
+      "size_bytes": 538328247
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke_test",
+      "exists": true,
+      "size_bytes": 28542
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo",
+      "exists": true,
+      "size_bytes": 1413970
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke",
+      "exists": true,
+      "size_bytes": 48664821
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke_test",
+      "exists": true,
+      "size_bytes": 25574
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo",
+      "exists": true,
+      "size_bytes": 857511
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch",
+      "exists": true,
+      "size_bytes": 1389754770
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch_test",
+      "exists": true,
+      "size_bytes": 28474
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch_inference",
+      "exists": true,
+      "size_bytes": 2744560
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch",
+      "exists": true,
+      "size_bytes": 538421733
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch_test",
+      "exists": true,
+      "size_bytes": 30376
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch_inference",
+      "exists": true,
+      "size_bytes": 1852281
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch",
+      "exists": true,
+      "size_bytes": 48705970
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch_test",
+      "exists": true,
+      "size_bytes": 26970
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch_inference",
+      "exists": true,
+      "size_bytes": 1809323
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/small",
+      "exists": true,
+      "size_bytes": 120271978
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium",
+      "exists": true,
+      "size_bytes": 361634885
+    }
+  ],
+  "delete_paths_after": [
+    {
+      "path": "experiments/accident_mmaction2_baseline/data/clips",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/video_checks",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/videomae_sanity",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/videomae_pretrained_full_sanity",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1153_videomae_mmaction_smoke",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1154_videomae_mmaction_smoke2",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3_test2",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1343_videomae_pretrained_medium_1epoch_inference",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1347_slowfast_pretrained_medium_1epoch_inference",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch_test",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_1349_x3d_pretrained_medium_1epoch_inference",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/small",
+      "exists": false,
+      "size_bytes": null
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/medium",
+      "exists": false,
+      "size_bytes": null
+    }
+  ],
+  "keep_paths_after": [
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch",
+      "exists": true,
+      "size_bytes": 2430151917
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_val_predictions",
+      "exists": true,
+      "size_bytes": 158014
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_144326_videomae_pretrained_full_3epoch_test_predictions",
+      "exists": true,
+      "size_bytes": 4534228
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_145438_cascade_positive_demo",
+      "exists": true,
+      "size_bytes": 1330952
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/outputs/20260707_145332_cascade_demo",
+      "exists": true,
+      "size_bytes": 3094774
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/reports",
+      "exists": true,
+      "size_bytes": 472257
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/configs",
+      "exists": true,
+      "size_bytes": 55618
+    },
+    {
+      "path": "experiments/accident_mmaction2_baseline/data/annotations",
+      "exists": true,
+      "size_bytes": 2557264
+    },
+    {
+      "path": "models/pretrained",
+      "exists": true,
+      "size_bytes": 1056158253
+    },
+    {
+      "path": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_mmaction_clips/full",
+      "exists": true,
+      "size_bytes": 1703148655
+    }
+  ],
+  "disk_after": "Filesystem           Size  Used Avail Use% Mounted on\n/dev/md0              50G   13G   38G  25% /root/autodl-tmp\nAutoFS:fswestb64873  200G   55G  146G  28% /autodl-fs/data\n"
+}
