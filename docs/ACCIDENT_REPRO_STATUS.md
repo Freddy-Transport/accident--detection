@@ -24,3 +24,15 @@ third_party/ACCIDENT/baselines/heuristic/.venv/bin/python bbox_dynamics.py --hel
 - `logs/accident_official/uv_install_dataset_requirements.log`
 - `logs/accident_official/uv_sync_heuristic.log`
 - `logs/accident_official/heuristic_import_check.log`
+
+## 数据下载与校验 - 2026-07-07
+
+- Kaggle 数据集：`picekl/accident`
+- 下载脚本：`scripts/accident_download_dataset.sh`
+- 数据目录：`/autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset`
+- 项目软链接：`data/official_accident`
+- 磁盘占用：`54G	/autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset`
+- 真实视频：`2027` 个
+- metadata：`metadata-real.csv` 已规范为 baseline 兼容的文件名路径；原始文件保留为 `metadata-real.original.csv`
+- 数据校验摘要：`{   "dataset_root": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset",   "metadata_real_exists": true,   "metadata_real_rows": 2027,   "real_video_count": 2027,   "first_video": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset/real_videos/Z4kg2Ev3vhk_00.mp4",   "first_video_opened": true,   "first_video_frame_count": 425,   "first_video_fps": 14.166666666666666,   "has_metadata_synthetic": true,   "has_synthetic_videos": true,   "metadata_original_backup": true } `
+- optical flow 路径探针：`logs/accident_official/optical_flow_path_probe.log`，`--take 1` 成功。
