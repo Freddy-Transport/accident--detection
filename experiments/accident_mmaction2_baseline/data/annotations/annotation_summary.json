@@ -1,0 +1,35 @@
+{
+  "train": {
+    "selected": 40,
+    "written": 40,
+    "failed": [],
+    "labels": {
+      "non_accident": 20,
+      "accident": 20
+    },
+    "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/train.txt",
+    "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/train_clips.csv"
+  },
+  "val": {
+    "selected": 40,
+    "written": 40,
+    "failed": [],
+    "labels": {
+      "non_accident": 20,
+      "accident": 20
+    },
+    "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/val.txt",
+    "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/val_clips.csv"
+  },
+  "test": {
+    "selected": 40,
+    "written": 40,
+    "failed": [],
+    "labels": {
+      "non_accident": 20,
+      "accident": 20
+    },
+    "ann_file": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/test.txt",
+    "clip_csv": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/test_clips.csv"
+  }
+}

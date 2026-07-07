@@ -1,0 +1,38 @@
+default_model: videomae
+class_num: 2
+class_names: [non_accident, accident]
+models:
+  videomae:
+    config: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/videomae_accident.py
+    clip_len: 16
+    frame_interval: 4
+    input_size: 224
+    batch_size: 1
+    num_workers: 2
+    max_epochs: 1
+    learning_rate: 0.00005
+  slowfast:
+    config: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/slowfast_accident.py
+    clip_len: 32
+    frame_interval: 2
+    input_size: 224
+    batch_size: 1
+    num_workers: 2
+    max_epochs: 1
+    learning_rate: 0.00005
+  x3d:
+    config: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/x3d_accident.py
+    clip_len: 16
+    frame_interval: 3
+    input_size: 224
+    batch_size: 1
+    num_workers: 2
+    max_epochs: 1
+    learning_rate: 0.00005
+sanity:
+  accident_samples: 20
+  non_accident_samples: 20
+  batches: 10
+  device: auto
+outputs_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs
+reports_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/reports

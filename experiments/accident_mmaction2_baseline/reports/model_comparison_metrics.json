@@ -1,0 +1,164 @@
+{
+  "videomae": {
+    "accuracy": 0.5,
+    "macro_precision": 0.25,
+    "macro_recall": 0.5,
+    "macro_f1": 0.3333333333333333,
+    "accident_precision": 0.0,
+    "accident_recall": 0.0,
+    "accident_f1": 0.0,
+    "confusion_matrix": [
+      [
+        20,
+        0
+      ],
+      [
+        20,
+        0
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "support": 20
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 20
+      }
+    },
+    "avg_latency_ms": 232.48840873129666,
+    "roc_auc": 0.545,
+    "pr_auc": 0.564634976134976,
+    "summary": {
+      "model": "videomae",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1158_videomae_mmaction_smoke3/best_acc_top1_epoch_1.pth",
+      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/videomae_accident.py",
+      "split": "test",
+      "num_samples": 40,
+      "elapsed_sec": 10.468,
+      "avg_latency_ms": 232.488,
+      "fps_clips": 4.301,
+      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo/predictions/predictions.csv",
+      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1208_videomae_inference_demo/predictions/predictions.json"
+    }
+  },
+  "slowfast": {
+    "accuracy": 0.375,
+    "macro_precision": 0.34326018808777425,
+    "macro_recall": 0.375,
+    "macro_f1": 0.34167215273206053,
+    "accident_precision": 0.2727272727272727,
+    "accident_recall": 0.15,
+    "accident_f1": 0.1935483870967742,
+    "confusion_matrix": [
+      [
+        12,
+        8
+      ],
+      [
+        17,
+        3
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.41379310344827586,
+        "recall": 0.6,
+        "f1": 0.4897959183673469,
+        "support": 20
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.2727272727272727,
+        "recall": 0.15,
+        "f1": 0.1935483870967742,
+        "support": 20
+      }
+    },
+    "avg_latency_ms": 383.1823065178469,
+    "roc_auc": 0.2525,
+    "pr_auc": 0.3815266815121691,
+    "summary": {
+      "model": "slowfast",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke/best_acc_top1_epoch_1.pth",
+      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/slowfast_accident.py",
+      "split": "test",
+      "num_samples": 40,
+      "elapsed_sec": 16.28,
+      "avg_latency_ms": 383.182,
+      "fps_clips": 2.61,
+      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo/predictions/predictions.csv",
+      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_inference_demo/predictions/predictions.json"
+    }
+  },
+  "x3d": {
+    "accuracy": 0.5,
+    "macro_precision": 0.25,
+    "macro_recall": 0.5,
+    "macro_f1": 0.3333333333333333,
+    "accident_precision": 0.5,
+    "accident_recall": 1.0,
+    "accident_f1": 0.6666666666666666,
+    "confusion_matrix": [
+      [
+        0,
+        20
+      ],
+      [
+        0,
+        20
+      ]
+    ],
+    "labels": [
+      0,
+      1
+    ],
+    "per_class": {
+      "0": {
+        "name": "non_accident",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 20
+      },
+      "1": {
+        "name": "accident",
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "support": 20
+      }
+    },
+    "avg_latency_ms": 271.0561580490321,
+    "roc_auc": 0.45000000000000007,
+    "pr_auc": 0.516150340445449,
+    "summary": {
+      "model": "x3d",
+      "checkpoint": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke/best_acc_top1_epoch_1.pth",
+      "config": "/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/configs/x3d_accident.py",
+      "split": "test",
+      "num_samples": 40,
+      "elapsed_sec": 11.301,
+      "avg_latency_ms": 271.056,
+      "fps_clips": 3.689,
+      "predictions_csv": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo/predictions/predictions.csv",
+      "predictions_json": "experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_inference_demo/predictions/predictions.json"
+    }
+  }
+}

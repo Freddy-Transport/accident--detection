@@ -35,3 +35,15 @@ logs/accident_official/*.json
 /*.onnx
 /*.engine
 /*.safetensors
+
+# MMAction2 source checkout for remote experiments
+third_party/mmaction2/
+
+# Generated MMAction2 accident baseline artifacts
+experiments/accident_mmaction2_baseline/data/clips/
+experiments/accident_mmaction2_baseline/outputs/
+experiments/accident_mmaction2_baseline/reports/*.log
+
+# Isolated MMAction2 environment
+.venv_mmaction/
+third_party/mmaction2.partial_*/

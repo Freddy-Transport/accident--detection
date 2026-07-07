@@ -1,0 +1,6 @@
+{
+  "package_root": "/root/autodl-tmp/traffic_accident_rnd/.venv_mmaction/lib/python3.12/site-packages/mmaction",
+  "patched": true,
+  "reason": "removed missing drn import from pip package localizers init",
+  "target": "/root/autodl-tmp/traffic_accident_rnd/.venv_mmaction/lib/python3.12/site-packages/mmaction/models/localizers/__init__.py"
+}

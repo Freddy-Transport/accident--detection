@@ -1,0 +1,6 @@
+{
+  "non_accident": 0,
+  "accident": 1,
+  "hard_negative": 2,
+  "uncertain": 3
+}

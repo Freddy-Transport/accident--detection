@@ -1,0 +1,1 @@
+SMOKE_DIR=experiments/accident_mmaction2_baseline/outputs/20260707_1154_videomae_mmaction_smoke2

@@ -1,0 +1,22 @@
+project_root: /root/autodl-tmp/traffic_accident_rnd
+experiment_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline
+accident_dataset_root: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset
+metadata_real: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset/metadata-real.csv
+video_root: /autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset/real_videos
+manifest_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/accident_manifest.csv
+annotation_dir: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations
+clip_root: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/clips
+label_map_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/label_map.json
+class_names_path: /root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/class_names.txt
+split_strategy: in_distribution_train_test_with_train_holdout_val
+val_fraction_from_train: 0.2
+random_seed: 20260707
+accident_clip:
+  pre_sec: 2.0
+  post_sec: 4.0
+non_accident_clip:
+  start_sec: 0.0
+  margin_before_accident_sec: 3.0
+  min_duration_sec: 1.0
+hard_negative_enabled: false
+yolo_detection_json_dir: /root/autodl-tmp/traffic_accident_rnd/outputs/accident_official_demo

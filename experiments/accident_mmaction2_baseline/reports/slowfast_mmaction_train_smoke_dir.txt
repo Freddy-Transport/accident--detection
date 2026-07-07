@@ -1,0 +1,1 @@
+SLOWFAST_DIR=experiments/accident_mmaction2_baseline/outputs/20260707_1210_slowfast_mmaction_smoke

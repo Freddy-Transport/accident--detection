@@ -1,0 +1,1 @@
+X3D_DIR=experiments/accident_mmaction2_baseline/outputs/20260707_1212_x3d_mmaction_smoke

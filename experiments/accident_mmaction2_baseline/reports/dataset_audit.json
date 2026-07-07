@@ -1,0 +1,71 @@
+{
+  "dataset_root": "/autodl-fs/data/traffic_accident_rnd/ACCIDENT_dataset",
+  "metadata_rows": 2027,
+  "manifest_rows": 3246,
+  "video_extensions": {
+    ".mp4": 2027
+  },
+  "original_type_counts": {
+    "rear-end": 328,
+    "t-bone": 657,
+    "single": 680,
+    "head-on": 117,
+    "sideswipe": 245
+  },
+  "split_counts": {
+    "test": 1520,
+    "train": 507
+  },
+  "resolution_top10": [
+    [
+      "1280x720",
+      633
+    ],
+    [
+      "960x720",
+      355
+    ],
+    [
+      "1920x1080",
+      309
+    ],
+    [
+      "1080x720",
+      123
+    ],
+    [
+      "1056x720",
+      103
+    ],
+    [
+      "1620x1080",
+      89
+    ],
+    [
+      "1440x1080",
+      72
+    ],
+    [
+      "2400x1080",
+      56
+    ],
+    [
+      "1584x1080",
+      52
+    ],
+    [
+      "854x384",
+      29
+    ]
+  ],
+  "corrupt_or_unreadable_count": 0,
+  "corrupt_or_unreadable_examples": [],
+  "has_explicit_non_accident": false,
+  "has_explicit_hard_negative": false,
+  "label_granularity": [
+    "video-level accident type",
+    "event-level accident_time",
+    "bbox-level accident region metadata"
+  ],
+  "weak_negative_policy": "pre-event clips before accident_time minus margin"
+}

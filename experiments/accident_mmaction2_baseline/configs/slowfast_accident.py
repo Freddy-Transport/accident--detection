@@ -1,0 +1,26 @@
+default_scope='mmaction'
+# Project-local MMAction2 config. Uses generated clip mp4 annotation: clip_path label.
+dataset_type='VideoDataset'
+data_root=''
+ann_file_train='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/train.txt'
+ann_file_val='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/val.txt'
+ann_file_test='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/data/annotations/test.txt'
+num_classes=2
+clip_len=32
+frame_interval=2
+input_size=224
+train_pipeline=[dict(type='DecordInit'),dict(type='SampleFrames',clip_len=clip_len,frame_interval=frame_interval,num_clips=1),dict(type='DecordDecode'),dict(type='Resize',scale=(-1,256)),dict(type='RandomResizedCrop'),dict(type='Resize',scale=(input_size,input_size),keep_ratio=False),dict(type='Flip',flip_ratio=0.5),dict(type='FormatShape',input_format='NCTHW'),dict(type='PackActionInputs')]
+val_pipeline=[dict(type='DecordInit'),dict(type='SampleFrames',clip_len=clip_len,frame_interval=frame_interval,num_clips=1,test_mode=True),dict(type='DecordDecode'),dict(type='Resize',scale=(-1,256)),dict(type='CenterCrop',crop_size=input_size),dict(type='FormatShape',input_format='NCTHW'),dict(type='PackActionInputs')]
+train_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=True),dataset=dict(type=dataset_type,ann_file=ann_file_train,data_prefix=dict(video=data_root),pipeline=train_pipeline))
+val_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=False),dataset=dict(type=dataset_type,ann_file=ann_file_val,data_prefix=dict(video=data_root),pipeline=val_pipeline,test_mode=True))
+test_pipeline=val_pipeline
+test_dataloader=dict(batch_size=1,num_workers=2,persistent_workers=False,sampler=dict(type='DefaultSampler',shuffle=False),dataset=dict(type=dataset_type,ann_file=ann_file_test,data_prefix=dict(video=data_root),pipeline=val_pipeline,test_mode=True))
+val_evaluator=dict(type='AccMetric')
+test_evaluator=dict(type='AccMetric')
+train_cfg=dict(type='EpochBasedTrainLoop',max_epochs=1,val_begin=1,val_interval=1)
+val_cfg=dict(type='ValLoop')
+test_cfg=dict(type='TestLoop')
+optim_wrapper=dict(optimizer=dict(type='AdamW',lr=5e-05,weight_decay=0.05))
+default_hooks=dict(checkpoint=dict(type='CheckpointHook',interval=1,save_best='auto'),logger=dict(type='LoggerHook',interval=10))
+work_dir='/root/autodl-tmp/traffic_accident_rnd/experiments/accident_mmaction2_baseline/outputs/mmaction_work_dirs/slowfast'
+model=dict(type='Recognizer3D',backbone=dict(type='ResNet3dSlowFast',resample_rate=8,speed_ratio=8,channel_ratio=8,slow_pathway=dict(type='resnet3d',depth=50,lateral=True,conv1_kernel=(1,7,7),conv1_stride_t=1,pool1_stride_t=1,inflate=(0,0,1,1),spatial_strides=(1,2,2,1)),fast_pathway=dict(type='resnet3d',depth=50,lateral=False,base_channels=8,conv1_kernel=(5,7,7),conv1_stride_t=1,pool1_stride_t=1,spatial_strides=(1,2,2,1))),cls_head=dict(type='SlowFastHead',in_channels=2304,num_classes=num_classes,spatial_type='avg',dropout_ratio=0.5,average_clips='prob'),data_preprocessor=dict(type='ActionDataPreprocessor',mean=[123.675,116.28,103.53],std=[58.395,57.12,57.375],format_shape='NCTHW'))
