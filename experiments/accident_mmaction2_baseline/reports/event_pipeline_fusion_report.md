@@ -40,6 +40,7 @@ Outputs per run:
 - `videomae_predictions.json`
 - `final_events.json`
 - `visualization.mp4`
+- `accident_evidence_tracks.json`
 - `event_push_dry_run.json` unless real push is explicitly enabled.
 
 ## Demo Results
@@ -67,3 +68,43 @@ Negative event output: `experiments/accident_mmaction2_baseline/outputs/20260707
 - Legacy trajectory rules are treated as candidate evidence only; final accident decision is gated by VideoMAE.
 - Real event push is disabled by default; enable only with `--push`, `TRAFFIC_EVENT_PUSH_ENABLED=1`, and a configured endpoint.
 - Exported `.pt`/`.onnx` require the same preprocessing contract; they are not standalone video readers.
+
+## New Video Entry
+
+Upload new videos to `/autodl-fs/data/traffic_accident_rnd/user_videos/`. The convenience symlink is `data/user_videos`.
+
+Run one uploaded video:
+
+```bash
+cd /root/autodl-tmp/traffic_accident_rnd
+hostname
+pwd
+nvidia-smi
+.venv/bin/python experiments/accident_mmaction2_baseline/scripts/run_user_video.py \
+  --video /autodl-fs/data/traffic_accident_rnd/user_videos/20260708/video.mp4 \
+  --threshold 0.56 \
+  --tracker auto \
+  --frame-stride 5 \
+  --device cuda:0
+```
+
+Run the newest uploaded video:
+
+```bash
+.venv/bin/python experiments/accident_mmaction2_baseline/scripts/run_user_video.py --latest
+```
+
+Visualization now adds a red `ACCIDENT DETECTED` banner on VideoMAE-positive candidate windows and labels evidence boxes as `SUSPECT_ACCIDENT_VEHICLE`. These boxes come from YOLO/Track evidence ids and are not box-level accident ground truth.
+
+## Visualization Label Verification
+
+Updated positive demo output: `experiments/accident_mmaction2_baseline/outputs/20260708_0956_event_pipeline_visual_label_positive`.
+
+- Candidates: `1`.
+- Final accident events: `1`.
+- VideoMAE accident score: `0.8417834639549255`.
+- Evidence rows: `68`.
+- Visualization: `experiments/accident_mmaction2_baseline/outputs/20260708_0956_event_pipeline_visual_label_positive/visualization.mp4`.
+- Evidence JSON: `experiments/accident_mmaction2_baseline/outputs/20260708_0956_event_pipeline_visual_label_positive/accident_evidence_tracks.json`.
+
+The visualization now labels only candidate evidence tracks as `SUSPECT_ACCIDENT_VEHICLE`; if no evidence track ids exist, it does not mark every vehicle in the accident window.

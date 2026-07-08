@@ -11,6 +11,7 @@ data/raw/*
 data/downloads/*
 data/samples/*.mp4
 data/samples/*.avi
+data/user_videos
 models/pretrained/*
 models/checkpoints/*
 logs/**/*.log

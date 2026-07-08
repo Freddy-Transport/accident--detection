@@ -1,5 +1,6 @@
 from traffic_accident_rnd.cascade import (
     assign_iou_tracks,
+    build_accident_evidence_tracks,
     build_final_accident_events,
     build_legacy_candidate_segments,
     build_track_candidate_segments,
@@ -106,3 +107,78 @@ def test_build_final_accident_events_uses_score_threshold_not_pred_label():
     assert events[0]["candidate_id"] == 1
     assert events[0]["event_type"] == "traffic_accident"
     assert events[0]["trigger_reasons"] == ["trajectory_conflict"]
+
+
+
+def test_build_accident_evidence_tracks_labels_only_positive_evidence_tracks():
+    predictions = [
+        {
+            "candidate_id": 0,
+            "segment_start_sec": 0.0,
+            "segment_end_sec": 1.0,
+            "accident_score": 0.80,
+            "trigger_reasons": ["abnormal_stop"],
+            "evidence_track_ids": [7],
+        },
+        {
+            "candidate_id": 1,
+            "segment_start_sec": 2.0,
+            "segment_end_sec": 3.0,
+            "accident_score": 0.20,
+            "trigger_reasons": ["speed_drop"],
+            "evidence_track_ids": [9],
+        },
+    ]
+    frames = [
+        {
+            "frame_index": 0,
+            "timestamp_sec": 0.0,
+            "detections": [
+                {"track_id": 7, "class_name": "car", "confidence": 0.9, "bbox_xyxy": [0, 1, 10, 11]},
+                {"track_id": 8, "class_name": "car", "confidence": 0.8, "bbox_xyxy": [20, 1, 30, 11]},
+            ],
+        },
+        {
+            "frame_index": 20,
+            "timestamp_sec": 2.0,
+            "detections": [
+                {"track_id": 9, "class_name": "car", "confidence": 0.9, "bbox_xyxy": [40, 1, 50, 11]},
+            ],
+        },
+    ]
+
+    evidence = build_accident_evidence_tracks(predictions, frames, threshold=0.56)
+
+    assert len(evidence) == 1
+    assert evidence[0]["track_id"] == 7
+    assert evidence[0]["frame_index"] == 0
+    assert evidence[0]["label"] == "SUSPECT_ACCIDENT_VEHICLE"
+    assert evidence[0]["accident_score"] == 0.80
+    assert evidence[0]["trigger_reasons"] == ["abnormal_stop"]
+
+
+def test_build_accident_evidence_tracks_does_not_label_without_evidence_track_ids():
+    predictions = [
+        {
+            "candidate_id": 0,
+            "segment_start_sec": 0.0,
+            "segment_end_sec": 1.0,
+            "accident_score": 0.90,
+            "trigger_reasons": ["unknown"],
+            "evidence_track_ids": [],
+        }
+    ]
+    frames = [
+        {
+            "frame_index": 0,
+            "timestamp_sec": 0.0,
+            "detections": [
+                {"track_id": 1, "class_name": "car", "confidence": 0.9, "bbox_xyxy": [0, 0, 10, 10]},
+            ],
+        }
+    ]
+
+    evidence = build_accident_evidence_tracks(predictions, frames, threshold=0.56)
+
+    assert evidence == []
+

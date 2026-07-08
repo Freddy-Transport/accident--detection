@@ -422,3 +422,49 @@ def build_final_accident_events(
             "notes": "YOLO/Track evidence supports candidate selection and visualization only; VideoMAE score gates the final accident decision.",
         })
     return events
+
+
+def build_accident_evidence_tracks(
+    predictions: list[dict[str, Any]],
+    frames: list[dict[str, Any]],
+    *,
+    threshold: float,
+) -> list[dict[str, Any]]:
+    """Return frame-level suspect vehicle evidence for VideoMAE-positive candidates."""
+    evidence_rows: list[dict[str, Any]] = []
+    positive = [pred for pred in predictions if float(pred.get("accident_score", 0.0)) >= threshold]
+    for pred in positive:
+        start_sec = float(pred.get("segment_start_sec", 0.0))
+        end_sec = float(pred.get("segment_end_sec", 0.0))
+        track_ids = {int(tid) for tid in pred.get("evidence_track_ids", []) if tid is not None}
+        if not track_ids:
+            continue
+        for frame in frames:
+            ts = float(frame.get("timestamp_sec", 0.0))
+            if ts < start_sec or ts > end_sec:
+                continue
+            frame_index = int(frame.get("frame_index", 0))
+            for det in frame.get("detections", []):
+                tid_raw = det.get("track_id")
+                if tid_raw is None:
+                    continue
+                tid = int(tid_raw)
+                if tid not in track_ids:
+                    continue
+                evidence_rows.append({
+                    "label": "SUSPECT_ACCIDENT_VEHICLE",
+                    "candidate_id": int(pred.get("candidate_id", 0)),
+                    "frame_index": frame_index,
+                    "timestamp_sec": ts,
+                    "track_id": tid,
+                    "class_name": str(det.get("class_name", "")),
+                    "confidence": float(det.get("confidence", 0.0)),
+                    "bbox_xyxy": [float(v) for v in det.get("bbox_xyxy", [])],
+                    "accident_score": float(pred.get("accident_score", 0.0)),
+                    "threshold": float(threshold),
+                    "segment_start_sec": start_sec,
+                    "segment_end_sec": end_sec,
+                    "trigger_reasons": list(pred.get("trigger_reasons", [])),
+                    "notes": "Suspect evidence vehicle from YOLO/Track candidate evidence; not box-level accident ground truth.",
+                })
+    return evidence_rows

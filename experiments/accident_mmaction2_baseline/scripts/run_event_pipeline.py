@@ -72,6 +72,7 @@ def main() -> int:
     parser.add_argument('--checkpoint', default=str(DEFAULT_CHECKPOINT))
     parser.add_argument('--config', default=str(DEFAULT_CONFIG))
     parser.add_argument('--threshold', type=float, default=0.56)
+    parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--tracker', choices=['auto', 'strongsort', 'iou'], default='auto')
     parser.add_argument('--frame-stride', type=int, default=1)
     parser.add_argument('--yolo-model', default=str(PROJECT_ROOT / 'models/pretrained/车辆检测_v8l.pt'))
@@ -96,6 +97,7 @@ def main() -> int:
     trajectory_jsonl = output_dir / 'trajectory_events.jsonl'
     candidates = output_dir / 'candidate_segments.jsonl'
     visualization = output_dir / 'visualization.mp4'
+    evidence_json = output_dir / 'accident_evidence_tracks.json'
 
     write_json(output_dir / 'pipeline_config.json', {
         'video': args.video,
@@ -103,6 +105,7 @@ def main() -> int:
         'checkpoint': args.checkpoint,
         'config': args.config,
         'threshold': args.threshold,
+        'device': args.device,
         'tracker': args.tracker,
         'frame_stride': args.frame_stride,
         'yolo_model': args.yolo_model,
@@ -121,7 +124,7 @@ def main() -> int:
 
     candidate_rows = read_jsonl(candidates)
     if candidate_rows:
-        run_step('05_videomae_score', [args.mmaction_python, str(SCRIPTS / 'score_candidates_videomae.py'), '--video', args.video, '--candidates-jsonl', str(candidates), '--config', args.config, '--checkpoint', args.checkpoint, '--output-dir', str(output_dir), '--threshold', str(args.threshold)], log_dir)
+        run_step('05_videomae_score', [args.mmaction_python, str(SCRIPTS / 'score_candidates_videomae.py'), '--video', args.video, '--candidates-jsonl', str(candidates), '--config', args.config, '--checkpoint', args.checkpoint, '--output-dir', str(output_dir), '--threshold', str(args.threshold), '--device', args.device], log_dir)
         predictions_json = output_dir / 'predictions/candidate_predictions.json'
         predictions = json.loads(predictions_json.read_text(encoding='utf-8'))
         shutil.copy2(predictions_json, output_dir / 'videomae_predictions.json')
@@ -145,10 +148,11 @@ def main() -> int:
     maybe_push_events(final_payload, output_dir, push=args.push, endpoint=args.push_endpoint)
 
     predictions_for_render = output_dir / 'predictions/candidate_predictions.json'
-    run_step('06_render', [args.pipeline_python, str(SCRIPTS / 'render_accident_video.py'), '--video', args.video, '--tracks-jsonl', str(tracks), '--predictions-json', str(predictions_for_render), '--output-video', str(visualization), '--threshold', str(args.threshold)], log_dir)
+    run_step('06_render', [args.pipeline_python, str(SCRIPTS / 'render_accident_video.py'), '--video', args.video, '--tracks-jsonl', str(tracks), '--predictions-json', str(predictions_for_render), '--output-video', str(visualization), '--threshold', str(args.threshold), '--evidence-json', str(evidence_json)], log_dir)
 
     summary = {
         **final_payload,
+        'device': args.device,
         'output_dir': str(output_dir),
         'detections_jsonl': str(detections),
         'tracks_jsonl': str(tracks),
@@ -157,6 +161,7 @@ def main() -> int:
         'videomae_predictions_json': str(output_dir / 'videomae_predictions.json'),
         'final_events_json': str(output_dir / 'final_events.json'),
         'visualization_video': str(visualization),
+        'accident_evidence_tracks_json': str(evidence_json),
     }
     write_json(output_dir / 'event_pipeline_summary.json', summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))

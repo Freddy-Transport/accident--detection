@@ -14,7 +14,7 @@ if str(SRC_ROOT) not in sys.path:
 
 import cv2
 
-from traffic_accident_rnd.cascade import read_jsonl
+from traffic_accident_rnd.cascade import build_accident_evidence_tracks, read_jsonl
 
 
 def positive_windows(predictions: list[dict], threshold: float) -> list[dict]:
@@ -28,11 +28,16 @@ def main() -> int:
     parser.add_argument('--predictions-json', required=True)
     parser.add_argument('--output-video', required=True)
     parser.add_argument('--threshold', type=float, default=0.5)
+    parser.add_argument('--evidence-json', default=None)
     args = parser.parse_args()
 
     tracks = read_jsonl(args.tracks_jsonl)
     predictions = json.loads(Path(args.predictions_json).read_text(encoding='utf-8'))
     windows = positive_windows(predictions, args.threshold)
+    evidence_rows = build_accident_evidence_tracks(predictions, tracks, threshold=args.threshold)
+    evidence_json = Path(args.evidence_json) if args.evidence_json else Path(args.output_video).with_name('accident_evidence_tracks.json')
+    evidence_json.parent.mkdir(parents=True, exist_ok=True)
+    evidence_json.write_text(json.dumps(evidence_rows, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     by_frame = {int(frame.get('frame_index', 0)): frame.get('detections', []) for frame in tracks}
 
     cap = cv2.VideoCapture(args.video)
@@ -62,19 +67,27 @@ def main() -> int:
             track_ids = {int(tid) for w in active for tid in w.get('evidence_track_ids', [])}
             score = max(float(w.get('accident_score', 0.0)) for w in active)
             reasons = sorted({reason for w in active for reason in w.get('trigger_reasons', [])})
+            banner = f"ACCIDENT DETECTED score={score:.3f} reasons={','.join(reasons)[:72]}"
+            cv2.rectangle(frame, (0, 0), (width, 68), (0, 0, 180), -1)
+            cv2.putText(frame, banner, (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)
+            cv2.putText(frame, 'Red boxes are SUSPECT accident evidence vehicles, not box-level ground truth', (12, 56), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
             for det in by_frame.get(frame_index, []):
-                if track_ids and int(det.get('track_id', -1)) not in track_ids:
+                det_track_id = int(det.get('track_id', -1))
+                if track_ids and det_track_id not in track_ids:
                     continue
                 x1, y1, x2, y2 = [int(round(v)) for v in det.get('bbox_xyxy', [0, 0, 0, 0])]
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                cv2.putText(frame, f"id={det.get('track_id')} {det.get('class_name','')}", (x1, max(20, y1 - 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 255), 2)
-            cv2.putText(frame, f"VideoMAE accident_score={score:.3f} reasons={','.join(reasons)[:60]}", (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 4)
+                label = f"SUSPECT_ACCIDENT_VEHICLE id={det_track_id} {det.get('class_name','')}"
+                (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.58, 2)
+                ly = max(72, y1 - 8)
+                cv2.rectangle(frame, (x1, max(0, ly - th - 8)), (min(width - 1, x1 + tw + 8), ly + 4), (0, 0, 180), -1)
+                cv2.putText(frame, label, (x1 + 4, ly), cv2.FONT_HERSHEY_SIMPLEX, 0.58, (255, 255, 255), 2)
             rendered_frames += 1
         writer.write(frame)
         frame_index += 1
     writer.release()
     cap.release()
-    print(json.dumps({'video': args.video, 'output_video': str(output), 'positive_windows': len(windows), 'rendered_frames': rendered_frames}, ensure_ascii=False, indent=2))
+    print(json.dumps({'video': args.video, 'output_video': str(output), 'evidence_json': str(evidence_json), 'evidence_rows': len(evidence_rows), 'positive_windows': len(windows), 'rendered_frames': rendered_frames}, ensure_ascii=False, indent=2))
     return 0
 
 
