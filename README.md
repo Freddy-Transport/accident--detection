@@ -241,7 +241,7 @@ traffic_accident_rnd/
 .venv/bin/python -m pytest -q
 ```
 
-当前回归结果为 25 passed。环境和模型文件依赖远程路径，提交前应同时确认 `git status` 没有意外包含 checkpoint、视频或实验输出。
+当前回归结果为 25 passed。环境和模型文件依赖远程路径。
 
 ## 已知限制
 
@@ -263,4 +263,4 @@ traffic_accident_rnd/
 
 ## 致谢
 
-本项目的数据和视频理解基线基于 [ACCIDENT](https://github.com/accidentbench/ACCIDENT) 与 [MMAction2](https://github.com/open-mmlab/mmaction2)，目标检测使用 [Ultralytics](https://github.com/ultralytics/ultralytics)。跟踪接口设计参考 [BoxMOT](https://github.com/mikel-brostrom/boxmot) 的可插拔跟踪工程实践。README 的组织方式也参考了这些高关注度开源项目的快速开始、能力边界、基准结果和模块化文档结构。
+本项目的数据和视频理解基线基于 [ACCIDENT](https://github.com/accidentbench/ACCIDENT) 与 [MMAction2](https://github.com/open-mmlab/mmaction2)，目标检测使用 [Ultralytics](https://github.com/ultralytics/ultralytics)。跟踪接口设计参考 [BoxMOT](https://github.com/mikel-brostrom/boxmot) 的可插拔跟踪工程实践。
