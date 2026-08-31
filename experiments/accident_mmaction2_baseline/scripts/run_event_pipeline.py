@@ -76,12 +76,15 @@ def main() -> int:
     parser.add_argument('--tracker', choices=['auto', 'strongsort', 'iou'], default='auto')
     parser.add_argument('--frame-stride', type=int, default=1)
     parser.add_argument('--yolo-model', default=str(PROJECT_ROOT / 'models/pretrained/车辆检测_v8l.pt'))
+    parser.add_argument('--yolo-device', default='0')
+    parser.add_argument('--yolo-imgsz', type=int, default=640)
     parser.add_argument('--yolo-python', default=str(PROJECT_ROOT / 'third_party/ACCIDENT/baselines/heuristic/.venv/bin/python'))
     parser.add_argument('--mmaction-python', default=str(PROJECT_ROOT / '.venv_mmaction/bin/python'))
     parser.add_argument('--pipeline-python', default=sys.executable)
     parser.add_argument('--pre-window-sec', type=float, default=2.0)
     parser.add_argument('--post-window-sec', type=float, default=4.0)
     parser.add_argument('--max-segments', type=int, default=8)
+    parser.add_argument('--use-legacy-trajectory', action='store_true')
     parser.add_argument('--push', action='store_true')
     parser.add_argument('--push-endpoint', default=os.environ.get('TRAFFIC_EVENT_PUSH_ENDPOINT'))
     args = parser.parse_args()
@@ -109,18 +112,47 @@ def main() -> int:
         'tracker': args.tracker,
         'frame_stride': args.frame_stride,
         'yolo_model': args.yolo_model,
+        'yolo_device': args.yolo_device,
+        'yolo_imgsz': args.yolo_imgsz,
         'pre_window_sec': args.pre_window_sec,
         'post_window_sec': args.post_window_sec,
         'max_segments': args.max_segments,
+        'use_legacy_trajectory': args.use_legacy_trajectory,
+        'annotation_free_inference': True,
+        'annotation_inputs': [],
         'push_requested': bool(args.push),
         'push_endpoint_configured': bool(args.push_endpoint),
         'created_at': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
     })
 
-    run_step('01_yolo_detect', [args.yolo_python, str(SCRIPTS / 'run_yolo_detect.py'), '--video', args.video, '--model', args.yolo_model, '--output-jsonl', str(detections), '--frame-stride', str(args.frame_stride)], log_dir)
+    run_step('01_yolo_detect', [
+        args.yolo_python, str(SCRIPTS / 'run_yolo_detect.py'),
+        '--video', args.video, '--model', args.yolo_model,
+        '--output-jsonl', str(detections), '--frame-stride', str(args.frame_stride),
+        '--imgsz', str(args.yolo_imgsz), '--device', args.yolo_device,
+    ], log_dir)
     run_step('02_track', [args.pipeline_python, str(SCRIPTS / 'run_strongsort_tracker.py'), '--video', args.video, '--detections-jsonl', str(detections), '--output-jsonl', str(tracks), '--tracker', args.tracker], log_dir)
-    run_step('03_legacy_trajectory', [args.pipeline_python, str(SCRIPTS / 'run_legacy_trajectory.py'), '--video', args.video, '--tracks-jsonl', str(tracks), '--output-json', str(trajectory_json), '--output-jsonl', str(trajectory_jsonl), '--video-id', video_id, '--legacy-log', str(log_dir / 'legacy_trackVehicleInSeqpre_stdout.log')], log_dir)
-    run_step('04_trigger_candidates', [args.pipeline_python, str(SCRIPTS / 'trigger_candidates_from_tracks.py'), '--tracks-jsonl', str(tracks), '--trajectory-events-json', str(trajectory_json), '--output-jsonl', str(candidates), '--video-id', video_id, '--pre-window-sec', str(args.pre_window_sec), '--post-window-sec', str(args.post_window_sec), '--max-segments', str(args.max_segments)], log_dir)
+    trigger_cmd = [
+        args.pipeline_python, str(SCRIPTS / 'trigger_candidates_from_tracks.py'),
+        '--tracks-jsonl', str(tracks), '--output-jsonl', str(candidates),
+        '--video-id', video_id, '--pre-window-sec', str(args.pre_window_sec),
+        '--post-window-sec', str(args.post_window_sec), '--max-segments', str(args.max_segments),
+    ]
+    if args.use_legacy_trajectory:
+        run_step('03_legacy_trajectory', [
+            args.pipeline_python, str(SCRIPTS / 'run_legacy_trajectory.py'),
+            '--video', args.video, '--tracks-jsonl', str(tracks),
+            '--output-json', str(trajectory_json), '--output-jsonl', str(trajectory_jsonl),
+            '--video-id', video_id,
+            '--legacy-log', str(log_dir / 'legacy_trackVehicleInSeqpre_stdout.log'),
+        ], log_dir)
+        trigger_cmd.extend(['--trajectory-events-json', str(trajectory_json), '--use-legacy-trajectory'])
+    else:
+        write_json(trajectory_json, {
+            'enabled': False, 'events': [],
+            'reason': 'Timestamped native track rules are the default annotation-free trigger.',
+        })
+    run_step('04_trigger_candidates', trigger_cmd, log_dir)
 
     candidate_rows = read_jsonl(candidates)
     if candidate_rows:
@@ -142,13 +174,14 @@ def main() -> int:
         'candidate_count': len(candidate_rows),
         'event_count': len(final_events),
         'events': final_events,
-        'notes': 'Final accident events require VideoMAE accident_score >= threshold; YOLO/Track evidence is auxiliary.',
+        'annotation_free_inference': True,
+        'annotation_inputs': [],
+        'notes': 'Candidates and suspect vehicles come only from YOLO/Track rules; VideoMAE gates final events. Ground truth is excluded from inference.',
     }
     write_json(output_dir / 'final_events.json', final_payload)
     maybe_push_events(final_payload, output_dir, push=args.push, endpoint=args.push_endpoint)
 
-    predictions_for_render = output_dir / 'predictions/candidate_predictions.json'
-    run_step('06_render', [args.pipeline_python, str(SCRIPTS / 'render_accident_video.py'), '--video', args.video, '--tracks-jsonl', str(tracks), '--predictions-json', str(predictions_for_render), '--output-video', str(visualization), '--threshold', str(args.threshold), '--evidence-json', str(evidence_json)], log_dir)
+    run_step('06_render', [args.pipeline_python, str(SCRIPTS / 'render_accident_video.py'), '--video', args.video, '--tracks-jsonl', str(tracks), '--predictions-json', str(output_dir / 'final_events.json'), '--output-video', str(visualization), '--threshold', str(args.threshold), '--evidence-json', str(evidence_json)], log_dir)
 
     summary = {
         **final_payload,

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import json
 import math
-from collections import defaultdict
+from collections import defaultdict, deque
 from pathlib import Path
+from statistics import median
 from typing import Any, Iterable
 
 VEHICLE_CLASSES = {"car", "truck", "bus", "motorcycle", "bicycle", "van"}
@@ -151,6 +152,45 @@ def _track_histories(frames: list[dict[str, Any]]) -> dict[int, list[dict[str, A
     return histories
 
 
+def _bbox_diagonal(bbox: list[float] | tuple[float, ...]) -> float:
+    if len(bbox) != 4:
+        return 0.0
+    x1, y1, x2, y2 = [float(v) for v in bbox]
+    return math.hypot(x2 - x1, y2 - y1)
+
+
+def _velocity(current: dict[str, Any], previous: dict[str, Any] | None) -> tuple[float, float]:
+    if previous is None:
+        return 0.0, 0.0
+    dt = float(current["timestamp_sec"]) - float(previous["timestamp_sec"])
+    if dt <= 1e-6:
+        return 0.0, 0.0
+    cx, cy = bbox_center_xyxy(current.get("bbox_xyxy", []))
+    px, py = bbox_center_xyxy(previous.get("bbox_xyxy", []))
+    return (cx - px) / dt, (cy - py) / dt
+
+
+def _can_emit(
+    emitted: dict[tuple[str, tuple[int, ...]], float],
+    reason: str,
+    track_ids: set[int],
+    timestamp: float,
+    cooldown_sec: float,
+) -> bool:
+    key = (reason, tuple(sorted(track_ids)))
+    previous = emitted.get(key)
+    if previous is not None and timestamp - previous < cooldown_sec:
+        return False
+    emitted[key] = timestamp
+    return True
+
+
+def _smooth_track_speeds(history: list[dict[str, Any]], radius: int = 1) -> list[float]:
+    raw = [max(0.0, float(item.get("speed_px_per_sec", 0.0))) for item in history]
+    return [float(median(raw[max(0, idx - radius): min(len(raw), idx + radius + 1)]))
+            for idx in range(len(raw))]
+
+
 def _make_segment(
     *,
     video_id: str,
@@ -162,30 +202,50 @@ def _make_segment(
     evidence: dict[str, Any],
     pre_window_sec: float,
     post_window_sec: float,
+    trigger_time_sec: float | None = None,
 ) -> dict[str, Any]:
+    trigger_time = float(trigger_time_sec if trigger_time_sec is not None else (start + end) / 2.0)
     return {
         "video_id": video_id,
         "segment_start_sec": round(max(0.0, start - pre_window_sec), 3),
         "segment_end_sec": round(max(end, start) + post_window_sec, 3),
-        "peak_time_sec": round((start + end) / 2.0, 3),
+        "peak_time_sec": round(trigger_time, 3),
+        "trigger_time_sec": round(trigger_time, 3),
         "candidate_score": round(float(score), 6),
         "trigger_reasons": [reason],
         "evidence_track_ids": sorted(int(t) for t in track_ids),
+        "primary_evidence_track_ids": sorted(int(t) for t in track_ids),
         "send_to_video_model": True,
         "evidence": evidence,
     }
 
 
-def _merge_segments(segments: list[dict[str, Any]], max_gap_sec: float = 1.0) -> list[dict[str, Any]]:
+def _merge_segments(
+    segments: list[dict[str, Any]], max_gap_sec: float = 1.0,
+    max_duration_sec: float | None = None,
+) -> list[dict[str, Any]]:
     if not segments:
         return []
     ordered = sorted(segments, key=lambda item: (float(item["segment_start_sec"]), float(item["segment_end_sec"])))
     merged: list[dict[str, Any]] = [ordered[0]]
     for seg in ordered[1:]:
         last = merged[-1]
-        if float(seg["segment_start_sec"]) <= float(last["segment_end_sec"]) + max_gap_sec:
+        combined_end = max(float(last["segment_end_sec"]), float(seg["segment_end_sec"]))
+        combined_duration = combined_end - float(last["segment_start_sec"])
+        can_merge = float(seg["segment_start_sec"]) <= float(last["segment_end_sec"]) + max_gap_sec
+        last_ids = set(last.get("evidence_track_ids", []))
+        seg_ids = set(seg.get("evidence_track_ids", []))
+        if last_ids and seg_ids and not last_ids.intersection(seg_ids):
+            can_merge = False
+        if max_duration_sec is not None and combined_duration > max_duration_sec:
+            can_merge = False
+        if can_merge:
             last["segment_end_sec"] = round(max(float(last["segment_end_sec"]), float(seg["segment_end_sec"])), 3)
-            last["peak_time_sec"] = round(max(float(last["peak_time_sec"]), float(seg["peak_time_sec"])), 3)
+            if float(seg["candidate_score"]) > float(last["candidate_score"]):
+                last["peak_time_sec"] = float(seg["peak_time_sec"])
+                last["trigger_time_sec"] = float(seg.get("trigger_time_sec", seg["peak_time_sec"]))
+                last["primary_evidence_track_ids"] = list(
+                    seg.get("primary_evidence_track_ids", seg.get("evidence_track_ids", [])))
             last["candidate_score"] = round(max(float(last["candidate_score"]), float(seg["candidate_score"])), 6)
             last["trigger_reasons"] = sorted(set(last.get("trigger_reasons", [])) | set(seg.get("trigger_reasons", [])))
             last["evidence_track_ids"] = sorted(set(last.get("evidence_track_ids", [])) | set(seg.get("evidence_track_ids", [])))
@@ -195,7 +255,7 @@ def _merge_segments(segments: list[dict[str, Any]], max_gap_sec: float = 1.0) ->
     return merged
 
 
-def build_track_candidate_segments(
+def _build_track_candidate_segments_v0(
     frames: list[dict[str, Any]],
     *,
     video_id: str,
@@ -288,6 +348,204 @@ def build_track_candidate_segments(
                         post_window_sec=post_window_sec,
                     ))
     merged = _merge_segments(segments)
+    merged.sort(key=lambda item: float(item.get("candidate_score", 0.0)), reverse=True)
+    selected = merged[:max_segments]
+    selected.sort(key=lambda item: float(item["segment_start_sec"]))
+    return selected
+
+
+def _motion_rule_segments(
+    histories: dict[int, list[dict[str, Any]]], *, video_id: str,
+    speed_drop_ratio: float, min_speed_before_drop: float,
+    low_speed_px_per_sec: float, abnormal_stop_sec: float,
+    pre_window_sec: float, post_window_sec: float,
+    cooldown_sec: float,
+) -> list[dict[str, Any]]:
+    segments: list[dict[str, Any]] = []
+    emitted: dict[tuple[str, tuple[int, ...]], float] = {}
+    for track_id, history in histories.items():
+        if len(history) < 4:
+            continue
+        speeds = _smooth_track_speeds(history)
+        moving_seen = False
+        low_start: float | None = None
+        stop_emitted = False
+        for idx, item in enumerate(history):
+            ts = float(item["timestamp_sec"])
+            speed = speeds[idx]
+            moving_seen = moving_seen or speed >= min_speed_before_drop
+            if idx >= 4:
+                before = float(median(speeds[max(0, idx - 4):idx]))
+                after = float(median(speeds[idx:min(len(speeds), idx + 2)]))
+                if (before >= min_speed_before_drop and after <= before * speed_drop_ratio
+                        and _can_emit(emitted, "speed_drop", {track_id}, ts, cooldown_sec)):
+                    segments.append(_make_segment(
+                        video_id=video_id, start=ts, end=ts, reason="speed_drop",
+                        score=min(5.0, before / max(after, 1.0)), track_ids={track_id},
+                        evidence={"track_id": track_id, "speed_before_px_per_sec": round(before, 3),
+                                  "speed_after_px_per_sec": round(after, 3)},
+                        pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+                        trigger_time_sec=ts,
+                    ))
+            if moving_seen and speed <= low_speed_px_per_sec:
+                low_start = ts if low_start is None else low_start
+                duration = ts - low_start
+                if (duration >= abnormal_stop_sec and not stop_emitted
+                        and _can_emit(emitted, "abnormal_stop", {track_id}, ts, cooldown_sec)):
+                    segments.append(_make_segment(
+                        video_id=video_id, start=low_start, end=ts, reason="abnormal_stop",
+                        score=1.0 + duration / max(abnormal_stop_sec, 1e-6), track_ids={track_id},
+                        evidence={"track_id": track_id, "stop_start_sec": round(low_start, 3),
+                                  "stop_duration_sec": round(duration, 3)},
+                        pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+                        trigger_time_sec=ts,
+                    ))
+                    stop_emitted = True
+            else:
+                low_start = None
+                stop_emitted = False
+    return segments
+
+
+def _interaction_rule_segments(
+    frames: list[dict[str, Any]], *, video_id: str,
+    overlap_iou: float, overlap_persistence_sec: float,
+    conflict_horizon_sec: float, min_conflict_speed: float,
+    queue_count: int, queue_growth_count: int, queue_window_sec: float,
+    pre_window_sec: float, post_window_sec: float, cooldown_sec: float,
+) -> list[dict[str, Any]]:
+    segments: list[dict[str, Any]] = []
+    emitted: dict[tuple[str, tuple[int, ...]], float] = {}
+    previous: dict[int, dict[str, Any]] = {}
+    overlap_state: dict[tuple[int, int], tuple[float, float]] = {}
+    count_history: deque[tuple[float, int]] = deque()
+
+    for frame in sorted(frames, key=lambda row: int(row.get("frame_index", 0))):
+        ts = float(frame.get("timestamp_sec", 0.0))
+        frame_index = int(frame.get("frame_index", 0))
+        detections = [dict(det, timestamp_sec=ts) for det in frame.get("detections", [])
+                      if det.get("track_id") is not None and len(det.get("bbox_xyxy", [])) == 4]
+        current = {int(det["track_id"]): det for det in detections}
+        velocities = {track_id: _velocity(det, previous.get(track_id))
+                      for track_id, det in current.items()}
+
+        count_history.append((ts, len(detections)))
+        while count_history and ts - count_history[0][0] > queue_window_sec:
+            count_history.popleft()
+        baseline_count = min((count for _, count in count_history), default=len(detections))
+        queue_ids = set(current)
+        if (len(detections) >= queue_count and len(detections) - baseline_count >= queue_growth_count
+                and queue_ids and _can_emit(emitted, "queue_growth", queue_ids, ts, cooldown_sec)):
+            segments.append(_make_segment(
+                video_id=video_id, start=ts, end=ts, reason="queue_growth",
+                score=1.0 + (len(detections) - baseline_count) / max(queue_growth_count, 1),
+                track_ids=queue_ids,
+                evidence={"frame_index": frame_index, "object_count": len(detections),
+                          "baseline_count": baseline_count, "window_sec": queue_window_sec},
+                pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+                trigger_time_sec=ts,
+            ))
+
+        active_overlap_pairs: set[tuple[int, int]] = set()
+        for idx, det_a in enumerate(detections):
+            tid_a = int(det_a["track_id"])
+            for det_b in detections[idx + 1:]:
+                tid_b = int(det_b["track_id"])
+                pair = tuple(sorted((tid_a, tid_b)))
+                track_ids = set(pair)
+                overlap = iou_xyxy(det_a["bbox_xyxy"], det_b["bbox_xyxy"])
+                if overlap >= overlap_iou:
+                    active_overlap_pairs.add(pair)
+                    start, best = overlap_state.get(pair, (ts, overlap))
+                    overlap_state[pair] = (start, max(best, overlap))
+                    if (ts - start >= overlap_persistence_sec
+                            and _can_emit(emitted, "bbox_overlap", track_ids, ts, cooldown_sec)):
+                        segments.append(_make_segment(
+                            video_id=video_id, start=start, end=ts, reason="bbox_overlap",
+                            score=1.0 + max(best, overlap), track_ids=track_ids,
+                            evidence={"frame_index": frame_index, "overlap_iou": round(max(best, overlap), 4),
+                                      "persistence_sec": round(ts - start, 3)},
+                            pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+                            trigger_time_sec=ts,
+                        ))
+
+                va, vb = velocities.get(tid_a, (0.0, 0.0)), velocities.get(tid_b, (0.0, 0.0))
+                speed_a, speed_b = math.hypot(*va), math.hypot(*vb)
+                if speed_a < min_conflict_speed or speed_b < min_conflict_speed:
+                    continue
+                ca, cb = bbox_center_xyxy(det_a["bbox_xyxy"]), bbox_center_xyxy(det_b["bbox_xyxy"])
+                rx, ry = ca[0] - cb[0], ca[1] - cb[1]
+                rvx, rvy = va[0] - vb[0], va[1] - vb[1]
+                rv_norm_sq = rvx * rvx + rvy * rvy
+                if rv_norm_sq <= 1e-6:
+                    continue
+                ttc = -(rx * rvx + ry * rvy) / rv_norm_sq
+                closest = math.hypot(rx + rvx * ttc, ry + rvy * ttc)
+                distance_limit = max(12.0, 0.35 * min(_bbox_diagonal(det_a["bbox_xyxy"]),
+                                                     _bbox_diagonal(det_b["bbox_xyxy"])))
+                if (0.0 < ttc <= conflict_horizon_sec and closest <= distance_limit
+                        and _can_emit(emitted, "trajectory_conflict", track_ids, ts, cooldown_sec)):
+                    segments.append(_make_segment(
+                        video_id=video_id, start=ts, end=ts, reason="trajectory_conflict",
+                        score=min(5.0, 1.0 + (conflict_horizon_sec - ttc) + distance_limit / max(closest, 1.0)),
+                        track_ids=track_ids,
+                        evidence={"frame_index": frame_index, "ttc_sec": round(ttc, 3),
+                                  "predicted_distance_px": round(closest, 3),
+                                  "distance_limit_px": round(distance_limit, 3)},
+                        pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+                        trigger_time_sec=ts,
+                    ))
+        overlap_state = {pair: state for pair, state in overlap_state.items() if pair in active_overlap_pairs}
+        previous.update(current)
+    return segments
+
+
+def build_track_candidate_segments(
+    frames: list[dict[str, Any]], *, video_id: str,
+    speed_drop_ratio: float = 0.4,
+    min_speed_before_drop: float = 20.0,
+    low_speed_px_per_sec: float = 3.0,
+    abnormal_stop_sec: float = 1.5,
+    overlap_iou: float = 0.2,
+    overlap_persistence_sec: float = 0.15,
+    conflict_horizon_sec: float = 2.0,
+    min_conflict_speed: float = 8.0,
+    queue_count: int = 8,
+    queue_growth_count: int = 3,
+    queue_window_sec: float = 2.0,
+    cooldown_sec: float = 2.0,
+    pre_window_sec: float = 2.0,
+    post_window_sec: float = 4.0,
+    max_segment_duration_sec: float = 10.0,
+    max_segments: int = 8,
+) -> list[dict[str, Any]]:
+    """Generate timestamped candidates from tracks without annotation access."""
+    histories = _track_histories(frames)
+    segments = _motion_rule_segments(
+        histories, video_id=video_id,
+        speed_drop_ratio=speed_drop_ratio,
+        min_speed_before_drop=min_speed_before_drop,
+        low_speed_px_per_sec=low_speed_px_per_sec,
+        abnormal_stop_sec=abnormal_stop_sec,
+        pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+        cooldown_sec=cooldown_sec,
+    )
+    segments.extend(_interaction_rule_segments(
+        frames, video_id=video_id,
+        overlap_iou=overlap_iou,
+        overlap_persistence_sec=overlap_persistence_sec,
+        conflict_horizon_sec=conflict_horizon_sec,
+        min_conflict_speed=min_conflict_speed,
+        queue_count=queue_count,
+        queue_growth_count=queue_growth_count,
+        queue_window_sec=queue_window_sec,
+        pre_window_sec=pre_window_sec, post_window_sec=post_window_sec,
+        cooldown_sec=cooldown_sec,
+    ))
+    merged = _merge_segments(
+        segments, max_gap_sec=0.25,
+        max_duration_sec=max_segment_duration_sec,
+    )
     merged.sort(key=lambda item: float(item.get("candidate_score", 0.0)), reverse=True)
     selected = merged[:max_segments]
     selected.sort(key=lambda item: float(item["segment_start_sec"]))
@@ -398,29 +656,72 @@ def build_final_accident_events(
     threshold: float,
     checkpoint: str,
 ) -> list[dict[str, Any]]:
-    events: list[dict[str, Any]] = []
+    positive_events: list[dict[str, Any]] = []
     for idx, pred in enumerate(predictions):
         score = float(pred.get("accident_score", 0.0))
         if score < threshold:
             continue
-        events.append({
+        positive_events.append({
             "event_id": f"{video_id}_accident_{idx:03d}",
             "event_type": "traffic_accident",
             "video_id": video_id,
             "video_path": video_path,
             "segment_start_sec": float(pred.get("segment_start_sec", 0.0)),
             "segment_end_sec": float(pred.get("segment_end_sec", 0.0)),
+            "detected_time_sec": float(pred.get("trigger_time_sec", pred.get("peak_time_sec", 0.0))),
+            "candidate_score": float(pred.get("candidate_score", 0.0)),
             "accident_score": score,
             "threshold": float(threshold),
             "decision": "accident",
             "video_model": "VideoMAE",
             "video_model_checkpoint": checkpoint,
             "trigger_reasons": list(pred.get("trigger_reasons", [])),
-            "evidence_track_ids": [int(tid) for tid in pred.get("evidence_track_ids", [])],
+            "evidence_track_ids": [int(tid) for tid in pred.get(
+                "primary_evidence_track_ids", pred.get("evidence_track_ids", []))],
+            "all_trigger_track_ids": [int(tid) for tid in pred.get("evidence_track_ids", [])],
             "candidate_id": int(pred.get("candidate_id", idx)),
             "clip_path": pred.get("clip_path"),
             "notes": "YOLO/Track evidence supports candidate selection and visualization only; VideoMAE score gates the final accident decision.",
         })
+
+    # Candidate clips intentionally overlap around nearby track triggers. Collapse
+    # overlapping VideoMAE-positive windows into one incident and retain the
+    # strongest candidate as the event time and suspect-vehicle source.
+    positive_events.sort(key=lambda item: (item["segment_start_sec"], item["segment_end_sec"]))
+    clusters: list[list[dict[str, Any]]] = []
+    cluster_end = float("-inf")
+    for event in positive_events:
+        start = float(event["segment_start_sec"])
+        if not clusters or start > cluster_end:
+            clusters.append([event])
+            cluster_end = float(event["segment_end_sec"])
+        else:
+            clusters[-1].append(event)
+            cluster_end = max(cluster_end, float(event["segment_end_sec"]))
+
+    events: list[dict[str, Any]] = []
+    for event_idx, cluster in enumerate(clusters):
+        representative = max(
+            cluster,
+            key=lambda item: (float(item["accident_score"]), float(item["candidate_score"])),
+        )
+        event = dict(representative)
+        event["event_id"] = f"{video_id}_accident_{event_idx:03d}"
+        event["supporting_candidate_ids"] = sorted(int(item["candidate_id"]) for item in cluster)
+        event["supporting_candidate_count"] = len(cluster)
+        event["supporting_span_start_sec"] = min(float(item["segment_start_sec"]) for item in cluster)
+        event["supporting_span_end_sec"] = max(float(item["segment_end_sec"]) for item in cluster)
+        event["all_trigger_track_ids"] = sorted({
+            int(track_id)
+            for item in cluster
+            for track_id in item.get("all_trigger_track_ids", [])
+        })
+        event["all_trigger_reasons"] = sorted({
+            str(reason)
+            for item in cluster
+            for reason in item.get("trigger_reasons", [])
+        })
+        events.append(event)
     return events
 
 
@@ -436,7 +737,8 @@ def build_accident_evidence_tracks(
     for pred in positive:
         start_sec = float(pred.get("segment_start_sec", 0.0))
         end_sec = float(pred.get("segment_end_sec", 0.0))
-        track_ids = {int(tid) for tid in pred.get("evidence_track_ids", []) if tid is not None}
+        primary_ids = pred.get("primary_evidence_track_ids", pred.get("evidence_track_ids", []))
+        track_ids = {int(tid) for tid in primary_ids if tid is not None}
         if not track_ids:
             continue
         for frame in frames:

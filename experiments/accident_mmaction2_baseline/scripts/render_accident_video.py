@@ -32,7 +32,8 @@ def main() -> int:
     args = parser.parse_args()
 
     tracks = read_jsonl(args.tracks_jsonl)
-    predictions = json.loads(Path(args.predictions_json).read_text(encoding='utf-8'))
+    prediction_payload = json.loads(Path(args.predictions_json).read_text(encoding='utf-8'))
+    predictions = prediction_payload.get('events', []) if isinstance(prediction_payload, dict) else prediction_payload
     windows = positive_windows(predictions, args.threshold)
     evidence_rows = build_accident_evidence_tracks(predictions, tracks, threshold=args.threshold)
     evidence_json = Path(args.evidence_json) if args.evidence_json else Path(args.output_video).with_name('accident_evidence_tracks.json')
@@ -63,26 +64,32 @@ def main() -> int:
             break
         ts = frame_index / fps
         active = [w for w in windows if float(w['segment_start_sec']) <= ts <= float(w['segment_end_sec'])]
+        track_ids = {int(tid) for w in active for tid in w.get(
+            'primary_evidence_track_ids', w.get('evidence_track_ids', []))}
         if active:
-            track_ids = {int(tid) for w in active for tid in w.get('evidence_track_ids', [])}
             score = max(float(w.get('accident_score', 0.0)) for w in active)
             reasons = sorted({reason for w in active for reason in w.get('trigger_reasons', [])})
             banner = f"ACCIDENT DETECTED score={score:.3f} reasons={','.join(reasons)[:72]}"
             cv2.rectangle(frame, (0, 0), (width, 68), (0, 0, 180), -1)
             cv2.putText(frame, banner, (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)
-            cv2.putText(frame, 'Red boxes are SUSPECT accident evidence vehicles, not box-level ground truth', (12, 56), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
-            for det in by_frame.get(frame_index, []):
-                det_track_id = int(det.get('track_id', -1))
-                if track_ids and det_track_id not in track_ids:
-                    continue
-                x1, y1, x2, y2 = [int(round(v)) for v in det.get('bbox_xyxy', [0, 0, 0, 0])]
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 4)
-                label = f"SUSPECT_ACCIDENT_VEHICLE id={det_track_id} {det.get('class_name','')}"
-                (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.58, 2)
-                ly = max(72, y1 - 8)
-                cv2.rectangle(frame, (x1, max(0, ly - th - 8)), (min(width - 1, x1 + tw + 8), ly + 4), (0, 0, 180), -1)
-                cv2.putText(frame, label, (x1 + 4, ly), cv2.FONT_HERSHEY_SIMPLEX, 0.58, (255, 255, 255), 2)
+            cv2.putText(frame, 'Red: suspect trigger track; green: other tracked road users', (12, 56), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
             rendered_frames += 1
+
+        for det in by_frame.get(frame_index, []):
+            det_track_id = int(det.get('track_id', -1))
+            x1, y1, x2, y2 = [int(round(v)) for v in det.get('bbox_xyxy', [0, 0, 0, 0])]
+            suspect = bool(active and det_track_id in track_ids)
+            color = (0, 0, 255) if suspect else (0, 180, 0)
+            thickness = 4 if suspect else 2
+            label = (
+                f"SUSPECT_ACCIDENT_VEHICLE id={det_track_id} {det.get('class_name','')}"
+                if suspect else f"TRACK id={det_track_id} {det.get('class_name','')}"
+            )
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
+            cv2.putText(
+                frame, label, (x1 + 2, max(82 if active else 18, y1 - 6)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2 if suspect else 1,
+            )
         writer.write(frame)
         frame_index += 1
     writer.release()
