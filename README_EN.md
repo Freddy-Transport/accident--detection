@@ -17,11 +17,13 @@
 </p>
 
 <p align="center">
-  <img src="./docs/assets/accident_pipeline_demo.jpg" width="760" alt="Accident pipeline visualization">
+  <a href="./docs/assets/accident_pipeline_demo_10s.mp4">
+    <img src="./docs/assets/accident_pipeline_demo_10s.gif" width="760" alt="Real CCTV accident discovery and suspect-vehicle localization demo">
+  </a>
 </p>
 
 <p align="center">
-  <sub>Red boxes mark suspect evidence vehicles associated with the candidate segment. They are not box-level accident ground truth; VideoMAE makes the final event decision.</sub>
+  <sub>First 10 seconds of a real CCTV inference result: green boxes are ordinary tracks and red boxes are suspected accident vehicles from trigger tracks. Click the animation for MP4.</sub>
 </p>
 
 ## Overview

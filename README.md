@@ -17,11 +17,13 @@
 </p>
 
 <p align="center">
-  <img src="./docs/assets/accident_pipeline_demo.jpg" width="760" alt="事故检测级联可视化示例">
+  <a href="./docs/assets/accident_pipeline_demo_10s.mp4">
+    <img src="./docs/assets/accident_pipeline_demo_10s.gif" width="760" alt="真实 CCTV 事故自动发现与疑似车辆定位演示">
+  </a>
 </p>
 
 <p align="center">
-  <sub>红框表示触发候选片段的疑似事故证据车辆，不是框级事故真值；最终事故结论由 VideoMAE 分数决定。</sub>
+  <sub>真实 CCTV 前 10 秒推理结果：绿色为普通跟踪车辆，红色为触发轨迹对应的疑似事故车辆；点击动画查看 MP4。</sub>
 </p>
 
 ## 项目简介
