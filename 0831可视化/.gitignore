@@ -1,0 +1,9 @@
+inputs/
+outputs/
+logs/
+models/
+metadata/Town06_sideswipe_clear_26.json
+*.mp4
+*.pth
+*.pt
+*.onnx

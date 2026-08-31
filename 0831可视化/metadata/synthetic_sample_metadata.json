@@ -1,0 +1,28 @@
+{
+  "rgb_path": "synthetic_videos/videos/sideswipe/Town06_sideswipe_clear_26.mp4",
+  "annotations_path": "synthetic_videos/annotations/Town06_sideswipe_clear_26.json.gz",
+  "type": "sideswipe",
+  "accident_time": 5.55,
+  "accident_frame": 111,
+  "center_x": 0.6880208333333333,
+  "center_y": 0.6041666666666666,
+  "x1": 0.6625,
+  "y1": 0.5694444444444444,
+  "x2": 0.7135416666666666,
+  "y2": 0.6388888888888888,
+  "map": "Town06",
+  "weather": "clear",
+  "camera_position": 26,
+  "no_frames": 181,
+  "duration": 9.05,
+  "height": 1080,
+  "width": 1920,
+  "annotations_start_offset": 260,
+  "demo_video": "inputs/synthetic/Town06_sideswipe_clear_26.mp4",
+  "annotation_copy": "metadata/Town06_sideswipe_clear_26.json",
+  "demo_accident_time_sec": 5.55,
+  "collision_actor_ids": [
+    371,
+    373
+  ]
+}
